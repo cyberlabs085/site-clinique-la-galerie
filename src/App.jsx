@@ -1123,14 +1123,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                     {/* ========================================================
                         FACE ARRIÈRE (VERSO 3D : COULISSES, SCIENCE & AVANTAGES)
                         ======================================================== */}
-                    <div className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-[#0B1329] to-slate-950 border-2 border-sky-500/40 shadow-2xl p-4 sm:p-6 flex flex-col justify-between backface-hidden rotate-y-180 overflow-y-auto">
+                    <div className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-[#0B1329] to-slate-950 border-2 border-sky-500/40 shadow-2xl p-3.5 sm:p-4 flex flex-col justify-between backface-hidden rotate-y-180">
 
                       {/* VERSO MODE 0 : AVANTAGES EMPREINTE OPTIQUE 3D */}
                       {activePlateauIndex === 0 && (
                         <div className="h-full flex flex-col justify-between">
                           <div>
-                            <div className="flex items-center justify-between pb-2.5 border-b border-sky-500/20 mb-3">
-                              <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-widest bg-sky-950/80 px-2.5 py-0.5 rounded-md border border-sky-700/60">
+                            <div className="flex items-center justify-between pb-2 border-b border-sky-500/20 mb-2">
+                              <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-widest bg-sky-950/80 px-2 py-0.5 rounded-md border border-sky-700/60">
                                 VERSO • AVANTAGES PATIENTS
                               </span>
                               <button
@@ -1142,45 +1142,45 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                               </button>
                             </div>
 
-                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
+                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
                               Pourquoi vous allez adorer l'empreinte 3D
                             </h4>
-                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                            <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">
                               À La Galerie, nous avons banni la pâte à empreinte étouffante au profit d'un parcours fluide et apaisant.
                             </p>
 
-                            <div className="grid grid-cols-1 gap-2.5 mt-3.5">
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <CheckCircle2 className="w-4 h-4" />
+                            <div className="grid grid-cols-1 gap-2 mt-2.5">
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Zéro haut-le-cœur ni étouffement</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Une tête optique miniature glisse avec douceur sans aucun goût désagréable ni réflexe nauséeux.
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Zap className="w-4 h-4" />
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Zap className="w-3.5 h-3.5" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Précision optique 15 microns</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Vos couronnes et facettes s'ajustent au millimètre dès le premier jour, sans retouche douloureuse.
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Layers className="w-4 h-4" />
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Layers className="w-3.5 h-3.5" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Dossier numérique archivé à vie</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Vos scans 3D restent sécurisés en cabinet pour tout besoin futur ou suivi à l'international.
                                   </p>
                                 </div>
@@ -1188,14 +1188,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </div>
                           </div>
 
-                          <div className="pt-3 border-t border-slate-800 mt-2 flex items-center justify-between">
+                          <div className="pt-2.5 border-t border-slate-800 mt-2 flex items-center justify-between">
                             <span className="text-[11px] font-mono text-sky-300 flex items-center gap-1.5">
                               <Clock className="w-3.5 h-3.5 text-sky-400" />
                               Numérisation : 3 min chrono
                             </span>
                             <button
                               onClick={() => setIsModalOpen(true)}
-                              className="bg-[#0284C7] hover:bg-sky-500 text-white font-bold text-xs px-4 py-2 rounded-lg transition shadow-lg shadow-sky-600/30 flex items-center gap-1.5"
+                              className="bg-[#0284C7] hover:bg-sky-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-lg shadow-sky-600/30 flex items-center gap-1.5"
                             >
                               <span>Prendre RDV Numérique →</span>
                             </button>
@@ -1207,8 +1207,8 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       {activePlateauIndex === 1 && (
                         <div className="h-full flex flex-col justify-between">
                           <div>
-                            <div className="flex items-center justify-between pb-2.5 border-b border-amber-500/20 mb-3">
-                              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest bg-amber-950/80 px-2.5 py-0.5 rounded-md border border-amber-700/60">
+                            <div className="flex items-center justify-between pb-2 border-b border-amber-500/20 mb-2">
+                              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest bg-amber-950/80 px-2 py-0.5 rounded-md border border-amber-700/60">
                                 VERSO • LE PROTOCOLE EN 3 ÉTAPES
                               </span>
                               <button
@@ -1220,45 +1220,45 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                               </button>
                             </div>
 
-                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
+                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
                               La Création de Votre Sourire d'Exception
                             </h4>
-                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                            <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">
                               Un sourire éclatant et naturel, sculpté selon la morphologie unique de votre visage.
                             </p>
 
-                            <div className="grid grid-cols-1 gap-2.5 mt-3.5">
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                            <div className="grid grid-cols-1 gap-2 mt-2.5">
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                   01
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Bilan Morphologique & Studio Photo</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Étude de l'axe des lèvres, de la carnation et du blanc de l’œil pour harmoniser la teinte.
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                   02
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Validation 3D Avant de Commencer</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Vous validez la forme exacte et la translucidité sur écran 4K avant toute intervention en bouche.
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                   03
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Facettes Céramiques e.max (Garantie 15+ ans)</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Pose indolore de céramique biocompatible ultra-résistante aux taches de café, thé et épices.
                                   </p>
                                 </div>
@@ -1266,14 +1266,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </div>
                           </div>
 
-                          <div className="pt-3 border-t border-slate-800 mt-2 flex items-center justify-between">
+                          <div className="pt-2.5 border-t border-slate-800 mt-2 flex items-center justify-between">
                             <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1.5">
                               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                               Délai : Réalisable en 48h à 72h
                             </span>
                             <button
                               onClick={() => setIsModalOpen(true)}
-                              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5"
+                              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5"
                             >
                               <span>Planifier mon Smile Design →</span>
                             </button>
@@ -1285,8 +1285,8 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       {activePlateauIndex === 2 && (
                         <div className="h-full flex flex-col justify-between">
                           <div>
-                            <div className="flex items-center justify-between pb-2.5 border-b border-emerald-500/20 mb-3">
-                              <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-2.5 py-0.5 rounded-md border border-emerald-700/60">
+                            <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20 mb-2">
+                              <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-700/60">
                                 VERSO • SCIENCE SANS DOULEUR
                               </span>
                               <button
@@ -1298,45 +1298,45 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                               </button>
                             </div>
 
-                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
+                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
                               Comment nous avons éliminé la douleur
                             </h4>
-                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                            <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">
                               Le système QuickSleeper diffuse le produit au rythme exact de la résistance tissulaire par micro-gouttes.
                             </p>
 
-                            <div className="grid grid-cols-1 gap-2.5 mt-3.5">
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Shield className="w-4 h-4" />
+                            <div className="grid grid-cols-1 gap-2 mt-2.5">
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Shield className="w-3.5 h-3.5" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Aucune seringue métallique terrifiante</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     L'appareil a l'allure élégante et rassurante d'un simple stylo médical électronique.
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <CheckCircle2 className="w-4 h-4" />
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Seule la dent ciblée s'endort</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Pas de lèvre engourdie, pas de joue déformée ni de langue anesthésiée pendant des heures.
                                   </p>
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
-                                <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Smile className="w-4 h-4" />
+                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
+                                <div className="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Smile className="w-3.5 h-3.5" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Reprise normale de votre journée</h5>
-                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                  <p className="text-[11px] text-slate-300 leading-snug">
                                     Vous pouvez sortir du cabinet, parler distinctement en réunion ou déjeuner sans aucune gêne.
                                   </p>
                                 </div>
@@ -1344,14 +1344,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </div>
                           </div>
 
-                          <div className="pt-3 border-t border-slate-800 mt-2 flex items-center justify-between">
+                          <div className="pt-2.5 border-t border-slate-800 mt-2 flex items-center justify-between">
                             <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                               Zéro effet bouche engourdie
                             </span>
                             <button
                               onClick={() => setIsModalOpen(true)}
-                              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition shadow-lg shadow-emerald-500/20 flex items-center gap-1.5"
+                              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-lg shadow-emerald-500/20 flex items-center gap-1.5"
                             >
                               <span>Prendre RDV sans stress →</span>
                             </button>
