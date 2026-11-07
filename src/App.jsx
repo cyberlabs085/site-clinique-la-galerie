@@ -1420,20 +1420,20 @@ Merci de me confirmer la disponibilité de ce créneau.`;
       </footer>
 
       {/* =========================================================================
-          10. BOUTON FLOTTANT WHATSAPP PERMANENT (VRAI LOGO OFFICIEL VECTORIEL)
+          10. BOUTON FLOTTANT WHATSAPP PERMANENT (SEULEMENT LE LOGO OFFICIEL FLOTTANT)
           ========================================================================= */}
       <a
         href="https://wa.me/221786509595?text=Bonjour%20Clinique%20Dentaire%20La%20Galerie,%20je%20souhaite%20prendre%20rendez-vous."
         target="_blank"
         rel="noreferrer"
-        className="whatsapp-float-btn fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-3.5 sm:px-5 sm:py-3.5 rounded-full shadow-2xl flex items-center gap-2.5 font-bold text-xs sm:text-sm tracking-wide group"
-        aria-label="Contacter la Clinique La Galerie sur WhatsApp"
+        className="whatsapp-float-btn fixed bottom-6 right-6 z-50 w-14 h-14 sm:w-16 sm:h-16 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center cursor-pointer transition-transform duration-300 hover:scale-110 active:scale-95 group"
+        aria-label="Contacter la Clinique La Galerie sur WhatsApp (+221 78 650 95 95)"
+        title="WhatsApp Direct Clinique La Galerie (+221 78 650 95 95)"
       >
-        {/* VRAI LOGO OFFICIEL VECTORIEL WHATSAPP */}
-        <svg viewBox="0 0 32 32" className="w-6 h-6 fill-white shrink-0 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg">
+        {/* VRAI LOGO OFFICIEL VECTORIEL WHATSAPP (SANS TEXTE) */}
+        <svg viewBox="0 0 32 32" className="w-8 h-8 sm:w-9 sm:h-9 fill-white shrink-0 group-hover:scale-110 transition-transform" xmlns="http://www.w3.org/2000/svg">
           <path d="M16 2C8.28 2 2 8.28 2 16c0 2.72.78 5.26 2.14 7.42L2 30l6.76-2.1c2.1 1.28 4.56 2.1 7.24 2.1 7.72 0 14-6.28 14-14S23.72 2 16 2zm0 25.56c-2.3 0-4.44-.68-6.24-1.84l-.44-.28-4.64 1.44 1.46-4.52-.3-.48c-1.3-2.04-1.98-4.4-1.98-6.88 0-6.68 5.44-12.12 12.14-12.12 6.68 0 12.12 5.44 12.12 12.12 0 6.68-5.44 12.16-12.12 12.16zm6.66-9.1c-.36-.18-2.14-1.06-2.48-1.18-.34-.12-.58-.18-.82.18-.24.36-.94 1.18-1.16 1.42-.22.24-.44.26-.8.08-.36-.18-1.52-.56-2.9-1.8-1.08-.96-1.8-2.14-2.02-2.5-.22-.36-.02-.56.16-.74.16-.16.36-.42.54-.62.18-.2.24-.36.36-.58.12-.22.06-.42-.04-.6-.1-.18-.82-1.98-1.12-2.72-.3-.72-.6-.62-.82-.64h-.7c-.24 0-.62.1-.94.44-.32.36-1.24 1.22-1.24 2.96 0 1.74 1.28 3.42 1.46 3.66.18.24 2.5 3.82 6.06 5.36.84.36 1.5.58 2.02.74.86.28 1.64.24 2.26.14.7-.1 2.14-.88 2.44-1.72.3-.84.3-1.56.22-1.72-.1-.14-.34-.24-.7-.42z"/>
         </svg>
-        <span className="hidden sm:inline font-sans">Prendre RDV WhatsApp</span>
       </a>
 
       {/* =========================================================================
