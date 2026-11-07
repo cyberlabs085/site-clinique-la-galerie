@@ -27,7 +27,8 @@ import {
   HeartHandshake,
   UserCheck,
   RotateCw,
-  RotateCcw
+  RotateCcw,
+  Menu
 } from 'lucide-react';
 
 import dentalBefore from './assets/dental_before.jpg';
@@ -44,6 +45,7 @@ export default function App() {
   const [patientPhone, setPatientPhone] = useState('');
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Plateau Technique Auto-Cycle State (0: Scanner, 1: Simulation, 2: Anesthésie)
   const [activePlateauIndex, setActivePlateauIndex] = useState(0);
@@ -401,49 +403,54 @@ Merci de me confirmer la disponibilité de ce créneau.`;
       <div ref={cursorAuraRef} className="cursor-aura hidden lg:block" />
 
       {/* =========================================================================
-          1. TOP BANNER LIVE & CONTACT DIRECT
+          1. TOP BANNER LIVE & CONTACT DIRECT (MOBILE-FIRST LUXE)
           ========================================================================= */}
-      <div className="bg-[#0F172A] text-white text-xs py-2 px-4 border-b border-slate-800 relative z-30">
-        <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2 font-mono">
+      <div className="bg-[#0B1329] text-white text-[11px] sm:text-xs py-2 px-3 sm:px-6 border-b border-slate-800 relative z-30">
+        <div className="max-w-7xl mx-auto flex items-center justify-between font-mono">
           <div className="flex items-center gap-2">
-            <span className="relative flex h-2.5 w-2.5">
+            <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 sm:h-2.5 sm:w-2.5 bg-emerald-500"></span>
             </span>
-            <span className="text-slate-200 font-semibold">CLINIQUE OUVERTE • ALMADIES, DAKAR</span>
+            <span className="text-slate-200 font-semibold truncate">
+              <span className="sm:hidden">OUVERT • ALMADIES</span>
+              <span className="hidden sm:inline">CLINIQUE OUVERTE • ALMADIES, DAKAR</span>
+            </span>
             <span className="hidden md:inline text-slate-500">|</span>
-            <span className="hidden md:inline text-slate-400">Scanner 3D & Prise de RDV en ligne</span>
+            <span className="hidden md:inline text-slate-400">Scanner 3D & Prise de RDV</span>
           </div>
-          <div className="flex items-center gap-4 text-slate-300">
-            <span className="hidden sm:inline">Lun - Sam : 09h00 – 17h30</span>
-            <a href="tel:+221786509595" className="hover:text-sky-400 transition flex items-center gap-1 font-bold text-sky-300">
-              <Phone className="w-3.5 h-3.5 text-sky-400" /> +221 78 650 95 95
+
+          <div className="flex items-center gap-3 sm:gap-4 text-slate-300 shrink-0">
+            <span className="hidden sm:inline">Lun - Sam : 09h – 17h30</span>
+            <a href="tel:+221786509595" className="hover:text-sky-300 transition flex items-center gap-1.5 font-bold text-sky-400">
+              <Phone className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-sky-400 shrink-0" />
+              <span>+221 78 650 95 95</span>
             </a>
           </div>
         </div>
       </div>
 
       {/* =========================================================================
-          2. NAVBAR PRESTIGE FLOTTANTE
+          2. NAVBAR PRESTIGE FLOTTANTE AVEC MENU MOBILE RESPONSIVE
           ========================================================================= */}
       <nav className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between">
 
           {/* Logo Officiel La Galerie */}
-          <a href="#" className="flex items-center gap-3 group">
-            <div className="w-11 h-11 rounded-2xl bg-[#0F172A] flex items-center justify-center text-white shadow-md shadow-slate-900/10 group-hover:scale-105 transition">
-              <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <a href="#" className="flex items-center gap-2.5 sm:gap-3 group">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-[#0F172A] flex items-center justify-center text-white shadow-md shadow-slate-900/10 group-hover:scale-105 transition shrink-0">
+              <svg width="20" height="20" className="sm:w-6 sm:h-6" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <rect width="100" height="100" rx="25" fill="#0F172A"/>
                 <path d="M30 40C30 25 70 25 70 40C70 60 55 75 50 82C45 75 30 60 30 40Z" fill="none" stroke="#38BDF8" strokeWidth="7"/>
                 <circle cx="50" cy="45" r="9" fill="#10B981"/>
               </svg>
             </div>
             <div>
-              <div className="font-display font-bold text-lg tracking-tight text-[#0F172A]">
+              <div className="font-display font-bold text-base sm:text-lg tracking-tight text-[#0F172A]">
                 LA GALERIE
               </div>
-              <div className="text-[10px] font-mono tracking-widest text-[#0284C7] uppercase font-semibold">
-                Clinique Dentaire • Almadies
+              <div className="text-[9px] sm:text-[10px] font-mono tracking-wider sm:tracking-widest text-[#0284C7] uppercase font-semibold">
+                Dentaire • Almadies
               </div>
             </div>
           </a>
@@ -460,17 +467,89 @@ Merci de me confirmer la disponibilité de ce créneau.`;
             <a href="#faq" className="hover:text-[#0284C7] transition">FAQ</a>
           </div>
 
-          {/* Bouton RDV Header */}
-          <div className="flex items-center gap-3">
+          {/* Boutons Action Header */}
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="btn-magnetic bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs sm:text-sm font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-slate-900/15 flex items-center gap-2"
+              className="btn-magnetic bg-[#0F172A] hover:bg-[#1E293B] text-white text-xs sm:text-sm font-bold px-3 py-2 sm:px-5 sm:py-2.5 rounded-xl shadow-lg shadow-slate-900/15 flex items-center gap-1.5 sm:gap-2 cursor-pointer"
             >
-              <Calendar className="w-4 h-4 text-[#38BDF8]" />
-              <span>Prendre Rendez-vous</span>
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#38BDF8]" />
+              <span className="hidden sm:inline">Prendre Rendez-vous</span>
+              <span className="sm:hidden text-xs">Prendre RDV</span>
+            </button>
+
+            {/* Hamburger Toggle (Mobile) */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 flex items-center justify-center transition cursor-pointer"
+              aria-label="Menu de navigation"
+            >
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
         </div>
+
+        {/* Tiroir de Navigation Mobile */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white border-b border-slate-200 px-5 py-4 space-y-3 shadow-2xl animate-fade-in">
+            <a
+              href="#soins"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 text-sm font-bold text-slate-800 hover:text-[#0284C7] transition border-b border-slate-100"
+            >
+              Soins d'Excellence
+            </a>
+            <a
+              href="#technologie"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="flex items-center justify-between py-2 text-sm font-bold text-slate-800 hover:text-[#0284C7] transition border-b border-slate-100"
+            >
+              <span>Plateau Clinique 3D</span>
+              <span className="text-[10px] font-mono bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                EN DIRECT
+              </span>
+            </a>
+            <a
+              href="#experience"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 text-sm font-bold text-slate-800 hover:text-[#0284C7] transition border-b border-slate-100"
+            >
+              L'Écrin Almadies
+            </a>
+            <a
+              href="#avis"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 text-sm font-bold text-slate-800 hover:text-[#0284C7] transition border-b border-slate-100"
+            >
+              Témoignages Patients (6)
+            </a>
+            <a
+              href="#faq"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block py-2 text-sm font-bold text-slate-800 hover:text-[#0284C7] transition border-b border-slate-100"
+            >
+              Questions Fréquentes
+            </a>
+
+            <div className="pt-2 flex gap-2">
+              <a
+                href="https://wa.me/221786509595"
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 bg-[#25D366] text-white text-xs font-bold py-2.5 rounded-xl text-center flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <span>WhatsApp Cabinet</span>
+              </a>
+              <a
+                href="tel:+221786509595"
+                className="flex-1 bg-slate-900 text-white text-xs font-bold py-2.5 rounded-xl text-center flex items-center justify-center gap-1.5 shadow-sm"
+              >
+                <Phone className="w-3.5 h-3.5 text-sky-400" />
+                <span>Appeler</span>
+              </a>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* =========================================================================
@@ -744,10 +823,10 @@ Merci de me confirmer la disponibilité de ce créneau.`;
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            {/* Colonne Gauche : 3 Cartes de Standing Médical avec Barre de Progression */}
-            <div className="lg:col-span-6">
+            {/* Colonne Gauche : Titre + Onglets Tactiles (Mobile) + 3 Cartes Verticales (Desktop) */}
+            <div className="w-full lg:col-span-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-xs font-mono font-bold text-sky-300 uppercase tracking-widest bg-sky-950/80 px-3.5 py-1 rounded-full border border-sky-800/80">
                   CONFORT & INNOVATION CLINIQUE
@@ -758,17 +837,43 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 </span>
               </div>
 
-              <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mb-6 leading-tight">
+              <h2 className="font-display text-2xl sm:text-4xl font-extrabold tracking-tight mb-4 sm:mb-6 leading-tight">
                 L’Excellence Médicale :<br />
                 <span className="text-[#38BDF8]">Zéro Pâte, Zéro Douleur, Zéro Stress.</span>
               </h2>
-              <p className="text-slate-300 text-sm sm:text-base leading-relaxed mb-8">
+              <p className="text-slate-300 text-xs sm:text-base leading-relaxed mb-6 sm:mb-8">
                 À la Clinique La Galerie, nous avons réinventé chaque étape du parcours patient pour éliminer l'anxiété et vous offrir une expérience digne des plus hauts standards internationaux.
               </p>
 
-              {/* 3 Cartes Médicales Auto-Défilantes */}
+              {/* ONGLETS MOBILES SEULEMENT (lg:hidden) - SITUÉS DIRECTEMENT AU-DESSUS DE LA VITRINE */}
+              <div className="lg:hidden flex gap-1.5 p-1.5 bg-slate-900/95 rounded-2xl border border-slate-800 mb-6 shadow-xl">
+                {[
+                  { idx: 0, label: 'Scanner 3D', icon: Scan },
+                  { idx: 1, label: 'Smile Design', icon: Sparkles },
+                  { idx: 2, label: 'Sans Douleur', icon: HeartHandshake }
+                ].map((tab) => (
+                  <button
+                    key={tab.idx}
+                    onClick={() => {
+                      setActivePlateauIndex(tab.idx);
+                      setPlateauProgress(0);
+                      setIsCardFlipped(false);
+                    }}
+                    className={`flex-1 py-2.5 px-1.5 rounded-xl text-xs font-bold font-mono flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      activePlateauIndex === tab.idx
+                        ? 'bg-[#0284C7] text-white shadow-lg shadow-sky-500/30 border border-sky-400'
+                        : 'text-slate-400 hover:text-white'
+                    }`}
+                  >
+                    <tab.icon className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{tab.label}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* 3 Cartes Médicales Auto-Défilantes (DESKTOP SEULEMENT : hidden lg:block) */}
               <div
-                className="space-y-4"
+                className="hidden lg:block space-y-4"
                 onMouseEnter={() => setIsPlateauPaused(true)}
                 onMouseLeave={() => setIsPlateauPaused(false)}
               >
@@ -863,14 +968,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 })}
               </div>
 
-              <div className="mt-4 text-[11px] font-mono text-slate-400 flex items-center justify-between">
+              <div className="hidden lg:flex mt-4 text-[11px] font-mono text-slate-400 items-center justify-between">
                 <span>Défilement automatique continu</span>
                 <span>Cliquez pour pivoter la carte 3D</span>
               </div>
             </div>
 
             {/* Colonne Droite : Vitrine Médicale Prestige avec Flip 3D (Face Avant / Verso) */}
-            <div className="lg:col-span-6">
+            <div className="w-full lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 shadow-2xl bg-gradient-to-b from-slate-900 to-[#0F172A] p-5 sm:p-7">
                 
                 {/* En-tête Prestigieux Clinique avec bouton de Pivotement 3D */}
@@ -1363,6 +1468,15 @@ Merci de me confirmer la disponibilité de ce créneau.`;
 
                   </div>
                 </div>
+              </div>
+
+              {/* Note d'aide Mobile sous la vitrine */}
+              <div className="lg:hidden mt-3 text-[11px] font-mono text-slate-400 flex items-center justify-between px-2">
+                <span className="flex items-center gap-1.5 text-slate-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
+                  Touchez les onglets en haut pour changer
+                </span>
+                <span className="text-sky-300 font-bold">Flip 3D actif ↷</span>
               </div>
             </div>
 
