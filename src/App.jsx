@@ -892,9 +892,9 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 </div>
 
                 {/* Cadre Visuel Principal avec Flip 3D (Perspective & Preserve-3D) */}
-                <div className="relative aspect-[4/3] sm:aspect-[16/11] rounded-2xl perspective-1200">
+                <div className="relative min-h-[460px] sm:min-h-[490px] rounded-2xl perspective-1200">
                   <div
-                    className={`relative w-full h-full rounded-2xl transition-transform duration-700 transform-style-3d ${
+                    className={`relative w-full h-full min-h-[460px] sm:min-h-[490px] rounded-2xl transition-transform duration-700 transform-style-3d ${
                       isCardFlipped ? 'rotate-y-180' : ''
                     }`}
                   >
@@ -926,14 +926,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                           </div>
 
                           {/* Cartouche d'explication au bas de la photo */}
-                          <div className="relative z-10 bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-slate-700/80 mt-auto">
+                          <div className="relative z-10 bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-slate-700/80 mt-auto shadow-2xl">
                             <h4 className="font-display font-bold text-sm sm:text-base text-white">
                               Empreinte Numérique en 3 Minutes
                             </h4>
                             <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                               Le praticien projette votre sourire sur grand écran. Zéro pâte, confort absolu et précision médicale au micron.
                             </p>
-                            <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
+                            <div className="mt-3.5 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
                               <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 Précision 15 microns
@@ -944,13 +944,13 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                     e.stopPropagation();
                                     setIsCardFlipped(true);
                                   }}
-                                  className="bg-sky-950/80 hover:bg-sky-900 text-sky-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-sky-700/70 transition flex items-center gap-1"
+                                  className="bg-sky-950/80 hover:bg-sky-900 text-sky-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-sky-700/70 transition flex items-center gap-1 cursor-pointer"
                                 >
                                   <span>Avantages ↷</span>
                                 </button>
                                 <button
                                   onClick={() => setIsModalOpen(true)}
-                                  className="bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
+                                  className="bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer"
                                 >
                                   Prendre RDV →
                                 </button>
@@ -972,7 +972,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                           </div>
 
                           <div
-                            className="relative flex-1 rounded-xl overflow-hidden border border-slate-700 select-none cursor-ew-resize"
+                            className="relative flex-1 min-h-[220px] rounded-xl overflow-hidden border border-slate-700 select-none cursor-ew-resize"
                             onMouseDown={() => setIsUserDragging(true)}
                             onMouseUp={() => setIsUserDragging(false)}
                             onTouchStart={() => setIsUserDragging(true)}
@@ -1018,7 +1018,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </div>
                           </div>
 
-                          <div className="pt-2 flex items-center gap-3 z-10">
+                          <div className="pt-2.5 flex items-center gap-3 z-10">
                             <span className="text-[10px] font-mono font-bold text-amber-400">AVANT</span>
                             <input
                               type="range"
@@ -1038,7 +1038,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             <span className="text-[10px] font-mono font-bold text-emerald-400">APRÈS</span>
                           </div>
 
-                          <div className="mt-2 pt-2 border-t border-slate-700/80 flex items-center justify-between gap-2 z-10">
+                          <div className="mt-2.5 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2 z-10">
                             <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1">
                               <Sparkles className="w-3.5 h-3.5" />
                               Céramique e.max
@@ -1049,13 +1049,13 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                   e.stopPropagation();
                                   setIsCardFlipped(true);
                                 }}
-                                className="bg-amber-950/80 hover:bg-amber-900 text-amber-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-amber-600/60 transition flex items-center gap-1"
+                                className="bg-amber-950/80 hover:bg-amber-900 text-amber-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-amber-600/60 transition flex items-center gap-1 cursor-pointer"
                               >
                                 <span>Protocole ↷</span>
                               </button>
                               <button
                                 onClick={() => setIsModalOpen(true)}
-                                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
+                                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer"
                               >
                                 Simuler mon sourire →
                               </button>
@@ -1084,14 +1084,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </span>
                           </div>
 
-                          <div className="relative z-10 bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-slate-700/80 mt-auto">
+                          <div className="relative z-10 bg-slate-900/95 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-slate-700/80 mt-auto shadow-2xl">
                             <h4 className="font-display font-bold text-sm sm:text-base text-white">
                               Dites Adieu à la Peur du Dentiste
                             </h4>
                             <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                               Grâce à l’anesthésie ostéocentrale assistée par micro-processeur, seule la dent soignée est insensibilisée. Repartez immédiatement avec le sourire libre, sans lèvre gelée.
                             </p>
-                            <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
+                            <div className="mt-3.5 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
                               <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
                                 <CheckCircle2 className="w-3.5 h-3.5" />
                                 Zéro seringue visible
@@ -1102,13 +1102,13 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                     e.stopPropagation();
                                     setIsCardFlipped(true);
                                   }}
-                                  className="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-emerald-600/60 transition flex items-center gap-1"
+                                  className="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-emerald-600/60 transition flex items-center gap-1 cursor-pointer"
                                 >
                                   <span>La Science ↷</span>
                                 </button>
                                 <button
                                   onClick={() => setIsModalOpen(true)}
-                                  className="bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
+                                  className="bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer"
                                 >
                                   Réserver sans peur →
                                 </button>
@@ -1123,36 +1123,36 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                     {/* ========================================================
                         FACE ARRIÈRE (VERSO 3D : COULISSES, SCIENCE & AVANTAGES)
                         ======================================================== */}
-                    <div className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-[#0B1329] to-slate-950 border-2 border-sky-500/40 shadow-2xl p-3.5 sm:p-4 flex flex-col justify-between backface-hidden rotate-y-180">
+                    <div className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-[#0B1329] to-slate-950 border-2 border-sky-500/40 shadow-2xl p-4 sm:p-5 flex flex-col justify-between backface-hidden rotate-y-180">
 
                       {/* VERSO MODE 0 : AVANTAGES EMPREINTE OPTIQUE 3D */}
                       {activePlateauIndex === 0 && (
                         <div className="h-full flex flex-col justify-between">
                           <div>
-                            <div className="flex items-center justify-between pb-2 border-b border-sky-500/20 mb-2">
-                              <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-widest bg-sky-950/80 px-2 py-0.5 rounded-md border border-sky-700/60">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-sky-500/20 mb-3">
+                              <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-widest bg-sky-950/80 px-2.5 py-1 rounded-md border border-sky-700/60">
                                 VERSO • AVANTAGES PATIENTS
                               </span>
                               <button
                                 onClick={() => setIsCardFlipped(false)}
-                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-md transition border border-slate-700"
+                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 px-3 py-1 rounded-lg transition border border-slate-700 cursor-pointer"
                               >
-                                <RotateCcw className="w-3 h-3 text-sky-400" />
+                                <RotateCcw className="w-3.5 h-3.5 text-sky-400" />
                                 <span>↶ Face photo</span>
                               </button>
                             </div>
 
-                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
+                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
                               Pourquoi vous allez adorer l'empreinte 3D
                             </h4>
-                            <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                               À La Galerie, nous avons banni la pâte à empreinte étouffante au profit d'un parcours fluide et apaisant.
                             </p>
 
-                            <div className="grid grid-cols-1 gap-2 mt-2.5">
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                            <div className="grid grid-cols-1 gap-2.5 mt-3">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <CheckCircle2 className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Zéro haut-le-cœur ni étouffement</h5>
@@ -1162,9 +1162,9 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Zap className="w-3.5 h-3.5" />
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Zap className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Précision optique 15 microns</h5>
@@ -1174,9 +1174,9 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Layers className="w-3.5 h-3.5" />
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Layers className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Dossier numérique archivé à vie</h5>
@@ -1188,14 +1188,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </div>
                           </div>
 
-                          <div className="pt-2.5 border-t border-slate-800 mt-2 flex items-center justify-between">
-                            <span className="text-[11px] font-mono text-sky-300 flex items-center gap-1.5">
+                          <div className="pt-3 pb-1 border-t border-slate-800 mt-auto flex items-center justify-between gap-3">
+                            <span className="text-[11px] font-mono text-sky-300 flex items-center gap-1.5 shrink-0">
                               <Clock className="w-3.5 h-3.5 text-sky-400" />
                               Numérisation : 3 min chrono
                             </span>
                             <button
                               onClick={() => setIsModalOpen(true)}
-                              className="bg-[#0284C7] hover:bg-sky-500 text-white font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-lg shadow-sky-600/30 flex items-center gap-1.5"
+                              className="bg-[#0284C7] hover:bg-sky-500 text-white font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-lg shadow-sky-600/30 flex items-center gap-1.5 shrink-0 cursor-pointer"
                             >
                               <span>Prendre RDV Numérique →</span>
                             </button>
@@ -1207,29 +1207,29 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       {activePlateauIndex === 1 && (
                         <div className="h-full flex flex-col justify-between">
                           <div>
-                            <div className="flex items-center justify-between pb-2 border-b border-amber-500/20 mb-2">
-                              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest bg-amber-950/80 px-2 py-0.5 rounded-md border border-amber-700/60">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-amber-500/20 mb-3">
+                              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest bg-amber-950/80 px-2.5 py-1 rounded-md border border-amber-700/60">
                                 VERSO • LE PROTOCOLE EN 3 ÉTAPES
                               </span>
                               <button
                                 onClick={() => setIsCardFlipped(false)}
-                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-md transition border border-slate-700"
+                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 px-3 py-1 rounded-lg transition border border-slate-700 cursor-pointer"
                               >
-                                <RotateCcw className="w-3 h-3 text-amber-400" />
+                                <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
                                 <span>↶ Comparateur</span>
                               </button>
                             </div>
 
-                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
+                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
                               La Création de Votre Sourire d'Exception
                             </h4>
-                            <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                               Un sourire éclatant et naturel, sculpté selon la morphologie unique de votre visage.
                             </p>
 
-                            <div className="grid grid-cols-1 gap-2 mt-2.5">
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                            <div className="grid grid-cols-1 gap-2.5 mt-3">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                   01
                                 </div>
                                 <div>
@@ -1240,8 +1240,8 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                   02
                                 </div>
                                 <div>
@@ -1252,8 +1252,8 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
                                   03
                                 </div>
                                 <div>
@@ -1266,14 +1266,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </div>
                           </div>
 
-                          <div className="pt-2.5 border-t border-slate-800 mt-2 flex items-center justify-between">
-                            <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1.5">
+                          <div className="pt-3 pb-1 border-t border-slate-800 mt-auto flex items-center justify-between gap-3">
+                            <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1.5 shrink-0">
                               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                              Délai : Réalisable en 48h à 72h
+                              Délai : 48h à 72h
                             </span>
                             <button
                               onClick={() => setIsModalOpen(true)}
-                              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5"
+                              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5 shrink-0 cursor-pointer"
                             >
                               <span>Planifier mon Smile Design →</span>
                             </button>
@@ -1285,30 +1285,30 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       {activePlateauIndex === 2 && (
                         <div className="h-full flex flex-col justify-between">
                           <div>
-                            <div className="flex items-center justify-between pb-2 border-b border-emerald-500/20 mb-2">
-                              <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-2 py-0.5 rounded-md border border-emerald-700/60">
+                            <div className="flex items-center justify-between pb-2.5 border-b border-emerald-500/20 mb-3">
+                              <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-2.5 py-1 rounded-md border border-emerald-700/60">
                                 VERSO • SCIENCE SANS DOULEUR
                               </span>
                               <button
                                 onClick={() => setIsCardFlipped(false)}
-                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-md transition border border-slate-700"
+                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1.5 bg-slate-800/80 hover:bg-slate-700 px-3 py-1 rounded-lg transition border border-slate-700 cursor-pointer"
                               >
-                                <RotateCcw className="w-3 h-3 text-emerald-400" />
+                                <RotateCcw className="w-3.5 h-3.5 text-emerald-400" />
                                 <span>↶ Face soin</span>
                               </button>
                             </div>
 
-                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
+                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
                               Comment nous avons éliminé la douleur
                             </h4>
-                            <p className="text-[11px] sm:text-xs text-slate-300 mt-0.5 leading-relaxed">
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                               Le système QuickSleeper diffuse le produit au rythme exact de la résistance tissulaire par micro-gouttes.
                             </p>
 
-                            <div className="grid grid-cols-1 gap-2 mt-2.5">
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Shield className="w-3.5 h-3.5" />
+                            <div className="grid grid-cols-1 gap-2.5 mt-3">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Shield className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Aucune seringue métallique terrifiante</h5>
@@ -1318,9 +1318,9 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <CheckCircle2 className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Seule la dent ciblée s'endort</h5>
@@ -1330,9 +1330,9 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                 </div>
                               </div>
 
-                              <div className="bg-slate-900/80 p-2 sm:p-2.5 rounded-xl border border-slate-800 flex items-start gap-2.5">
-                                <div className="w-6 h-6 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
-                                  <Smile className="w-3.5 h-3.5" />
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Smile className="w-4 h-4" />
                                 </div>
                                 <div>
                                   <h5 className="text-xs font-bold text-white">Reprise normale de votre journée</h5>
@@ -1344,14 +1344,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             </div>
                           </div>
 
-                          <div className="pt-2.5 border-t border-slate-800 mt-2 flex items-center justify-between">
-                            <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+                          <div className="pt-3 pb-1 border-t border-slate-800 mt-auto flex items-center justify-between gap-3">
+                            <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5 shrink-0">
                               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                               Zéro effet bouche engourdie
                             </span>
                             <button
                               onClick={() => setIsModalOpen(true)}
-                              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-lg shadow-emerald-500/20 flex items-center gap-1.5"
+                              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 shrink-0 cursor-pointer"
                             >
                               <span>Prendre RDV sans stress →</span>
                             </button>
