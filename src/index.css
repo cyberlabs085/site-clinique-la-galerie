@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@theme {
+  --color-medical-dark: #0F172A;
+  --color-medical-cobalt: #1E40AF;
+  --color-medical-cyan: #0284C7;
+  --color-medical-emerald: #059669;
+  --color-medical-pearl: #F8FAFC;
+  --color-medical-border: #E2E8F0;
+
+  --font-serif: "Instrument Serif", serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Grille Clinique Subtile */
+.grid-clinical {
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.035) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* 3D Tilt Card Container */
+.card-3d-tilt {
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.25s ease;
+  will-change: transform;
+}
+
+/* Specular Glare Effect */
+.glare-effect {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.45) 0%, transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: inherit;
+}
+.card-3d-tilt:hover .glare-effect {
+  opacity: 1;
+}
+
+/* Micro-Interactions Magnétiques */
+.btn-magnetic {
+  position: relative;
+  transition: transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.22s ease;
+}
+.btn-magnetic:hover {
+  transform: translateY(-2px) scale(1.025);
+}
+.btn-magnetic:active {
+  transform: translateY(0px) scale(0.98);
+}
+
+/* Floating WhatsApp Button Pulse */
+@keyframes pulseMedical {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 25px -5px rgba(37, 211, 102, 0.45); }
+  50% { transform: scale(1.06); box-shadow: 0 15px 35px -5px rgba(37, 211, 102, 0.65); }
+}
+.whatsapp-float-btn {
+  animation: pulseMedical 3s infinite ease-in-out;
+}
+.whatsapp-float-btn:hover {
+  animation: none;
+  transform: scale(1.1);
+}
+
+/* Animations Médicales 3D & Scanner Laser */
+@keyframes scanLaser {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+.scan-laser-beam {
+  animation: scanLaser 2.8s ease-in-out infinite;
+}
+
+@keyframes waveExpand {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+.wave-ring {
+  animation: waveExpand 2.2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.float-element {
+  animation: floatSlow 4s ease-in-out infinite;
+}
+
+/* Infinite Marquee for Testimonials */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 40s linear infinite;
+}
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #F8FAFC; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
