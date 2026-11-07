@@ -25,8 +25,12 @@ import {
   Sliders,
   Scan,
   Cpu,
-  Check
+  Check,
+  Maximize2
 } from 'lucide-react';
+
+import dentalBefore from './assets/dental_before.jpg';
+import dentalAfter from './assets/dental_after.jpg';
 
 export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,9 +42,14 @@ export default function App() {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
 
-  // Terminal 3D Mode & Simulation State
-  const [terminalMode, setTerminalMode] = useState('scanner'); // 'scanner' | 'simulation' | 'anesthesia'
-  const [sliderPosition, setSliderPosition] = useState(50); // for before/after slider (0 to 100)
+  // Plateau Technique Auto-Cycle State (0: Scanner, 1: Simulation, 2: Anesthésie)
+  const [activePlateauIndex, setActivePlateauIndex] = useState(0);
+  const [plateauProgress, setPlateauProgress] = useState(0);
+  const [isPlateauPaused, setIsPlateauPaused] = useState(false);
+
+  // Before/After Slider State with Auto-Gliding Animation
+  const [sliderPosition, setSliderPosition] = useState(50);
+  const [isUserDragging, setIsUserDragging] = useState(false);
   const [telemetryPoints, setTelemetryPoints] = useState(1428500);
 
   // Dynamic Testimonial Carousel State
@@ -50,15 +59,49 @@ export default function App() {
   // Canvas radar animation ref
   const canvasRef = useRef(null);
 
-  // Live telemetry pulse
+  // 1. Auto-Cycle the 3 Plateau 3D Cards automatically with animated progress
+  useEffect(() => {
+    if (isPlateauPaused) return;
+    const DURATION = 6000; // 6 seconds per card
+    let startTime = Date.now();
+
+    const timer = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min((elapsed / DURATION) * 100, 100);
+      setPlateauProgress(pct);
+
+      if (elapsed >= DURATION) {
+        startTime = Date.now();
+        setActivePlateauIndex((prev) => (prev + 1) % 3);
+        setPlateauProgress(0);
+      }
+    }, 40);
+
+    return () => clearInterval(timer);
+  }, [activePlateauIndex, isPlateauPaused]);
+
+  // 2. Auto-Glide Slider for Before / After when in simulation mode & not dragged
+  useEffect(() => {
+    if (isUserDragging || activePlateauIndex !== 1) return;
+    let angle = 0;
+    const glideTimer = setInterval(() => {
+      angle += 0.035;
+      // Smooth sinusoidal oscillation between 20% and 80%
+      const pos = 50 + Math.sin(angle) * 32;
+      setSliderPosition(pos);
+    }, 35);
+    return () => clearInterval(glideTimer);
+  }, [isUserDragging, activePlateauIndex]);
+
+  // 3. Live telemetry pulse
   useEffect(() => {
     const interval = setInterval(() => {
-      setTelemetryPoints((prev) => prev + Math.floor((Math.random() - 0.45) * 120));
-    }, 800);
+      setTelemetryPoints((prev) => prev + Math.floor((Math.random() - 0.48) * 140));
+    }, 700);
     return () => clearInterval(interval);
   }, []);
 
-  // Autoplay Testimonial Carousel
+  // 4. Autoplay Testimonial Carousel
   useEffect(() => {
     if (!isTestimonialAutoplay) return;
     const timer = setInterval(() => {
@@ -67,7 +110,7 @@ export default function App() {
     return () => clearInterval(timer);
   }, [isTestimonialAutoplay]);
 
-  // Canvas 3D Medical Radar Background
+  // 5. Canvas 3D Medical Radar Background
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -83,13 +126,13 @@ export default function App() {
     };
     window.addEventListener('resize', handleResize);
 
-    const particles = Array.from({ length: 42 }, (_, i) => ({
+    const particles = Array.from({ length: 45 }, (_, i) => ({
       x: Math.random() * width,
       y: Math.random() * height,
       vx: (Math.random() - 0.5) * 0.45,
       vy: (Math.random() - 0.5) * 0.45,
       radius: Math.random() * 2.2 + 1,
-      color: i % 2 === 0 ? 'rgba(2, 132, 199, 0.45)' : 'rgba(16, 185, 129, 0.35)'
+      color: i % 2 === 0 ? 'rgba(2, 132, 199, 0.5)' : 'rgba(16, 185, 129, 0.4)'
     }));
 
     let angle = 0;
@@ -97,12 +140,12 @@ export default function App() {
     const render = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Radar scan line
       angle += 0.01;
       const cx = width * 0.82;
       const cy = height * 0.42;
       const radius = 240;
 
+      // Concentric circles
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.strokeStyle = 'rgba(2, 132, 199, 0.09)';
@@ -118,7 +161,7 @@ export default function App() {
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.15)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
@@ -143,7 +186,7 @@ export default function App() {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(2, 132, 199, ${0.13 * (1 - dist / 95)})`;
+            ctx.strokeStyle = `rgba(2, 132, 199, ${0.14 * (1 - dist / 95)})`;
             ctx.lineWidth = 0.6;
             ctx.stroke();
           }
@@ -412,7 +455,6 @@ Merci de me confirmer la disponibilité de ce créneau.`;
           3. HERO SECTION CLINIQUE PURE AVEC MODULE LIVE
           ========================================================================= */}
       <section className="relative overflow-hidden pt-10 pb-20 lg:pt-14 lg:pb-28">
-        {/* Canvas Biomédical 3D d'arrière-plan */}
         <canvas ref={canvasRef} className="absolute inset-0 pointer-events-none z-0" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
@@ -494,7 +536,6 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 </div>
 
                 <form onSubmit={handleFinalBooking} className="space-y-4">
-                  {/* Choix du soin */}
                   <div>
                     <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2">
                       1. Type de Soin Souhaité
@@ -513,7 +554,6 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                     </select>
                   </div>
 
-                  {/* Choix du jour */}
                   <div>
                     <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2">
                       2. Jour Préféré
@@ -536,7 +576,6 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                     </div>
                   </div>
 
-                  {/* Choix du créneau */}
                   <div>
                     <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2">
                       3. Créneau Horaire
@@ -559,7 +598,6 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                     </div>
                   </div>
 
-                  {/* Coordonnées */}
                   <div className="space-y-3 pt-2">
                     <input
                       type="text"
@@ -671,7 +709,8 @@ Merci de me confirmer la disponibilité de ce créneau.`;
       </section>
 
       {/* =========================================================================
-          5. PLATEAU TECHNIQUE & SIMULATEUR 3D INTERACTIF EN DIRECT
+          5. PLATEAU TECHNIQUE & TERMINAL 3D DÉFILANT AUTOMATIQUEMENT
+             (AVEC VRAIES PHOTOS AVANT / APRÈS & CYCLE AUTOMATIQUE SANS BLOCAGE)
           ========================================================================= */}
       <section id="technologie" className="py-20 bg-[#0F172A] text-white relative overflow-hidden">
         {/* Lueur d'ambiance laser */}
@@ -682,12 +721,19 @@ Merci de me confirmer la disponibilité de ce créneau.`;
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
             
-            {/* Colonne Gauche : Argumentaire & Sélecteur Interactif */}
+            {/* Colonne Gauche : 3 Actifs Défilant Automatiquement avec Barre de Progression */}
             <div className="lg:col-span-6">
-              <span className="text-xs font-mono font-bold text-[#38BDF8] uppercase tracking-widest bg-sky-950 px-3 py-1 rounded-full border border-sky-800">
-                HAUTE TECHNOLOGIE DENTAIRE
-              </span>
-              <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mt-4 mb-6 leading-tight">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-xs font-mono font-bold text-[#38BDF8] uppercase tracking-widest bg-sky-950 px-3 py-1 rounded-full border border-sky-800">
+                  HAUTE TECHNOLOGIE DENTAIRE
+                </span>
+                <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                  DÉFILEMENT AUTOMATIQUE LIVE
+                </span>
+              </div>
+
+              <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight mb-6 leading-tight">
                 Zéro Pâte, Zéro Douleur.<br />
                 <span className="text-[#38BDF8]">La Révolution Numérique 3D.</span>
               </h2>
@@ -695,67 +741,91 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 À la Clinique La Galerie, nous avons banni les anciennes empreintes en pâte suffocante et les gestes invasifs. Vos dents sont numérisées en 3D en temps réel avec une précision de 15 microns.
               </p>
 
-              {/* 3 Cartes Cliquables qui pilotent le Terminal 3D */}
-              <div className="space-y-4">
+              {/* 3 Cartes Actives Auto-Défilantes */}
+              <div
+                className="space-y-4"
+                onMouseEnter={() => setIsPlateauPaused(true)}
+                onMouseLeave={() => setIsPlateauPaused(false)}
+              >
                 {[
                   {
-                    id: 'scanner',
+                    idx: 0,
                     title: 'Scanner Intra-Oral 3D Couleur',
                     desc: 'Numérisation complète de vos mâchoires en 3 minutes sans aucun contact désagréable.',
                     sub: 'Précision optique 15 µm • Zéro nausée'
                   },
                   {
-                    id: 'simulation',
+                    idx: 1,
                     title: 'Modélisation Smile Design Avant / Après',
-                    desc: 'Visualisez le résultat de vos facettes ou implants sur écran géant 4K avant même de débuter le traitement.',
-                    sub: 'Simulation esthétique instantanée'
+                    desc: 'Visualisez le résultat de vos facettes ou implants sur écran géant 4K avec comparaison réelle avant/après.',
+                    sub: 'Vraies photos cliniques • Slider dynamique'
                   },
                   {
-                    id: 'anesthesia',
+                    idx: 2,
                     title: 'Anesthésie Ostéocentrale Assistée',
                     desc: 'Engourdissement réservé strictement à la dent soignée. Vous reparlez et souriez sans lèvre gelée.',
                     sub: 'Zéro seringue visible • Zéro douleur'
                   }
-                ].map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setTerminalMode(item.id)}
-                    className={`cursor-pointer transition-all duration-200 p-4 rounded-xl border flex gap-4 ${
-                      terminalMode === item.id
-                        ? 'bg-slate-800/90 border-[#38BDF8] shadow-lg shadow-sky-500/10 scale-[1.01]'
-                        : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800/60 hover:border-slate-600'
-                    }`}
-                  >
+                ].map((item) => {
+                  const isActive = activePlateauIndex === item.idx;
+                  return (
                     <div
-                      className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition ${
-                        terminalMode === item.id
-                          ? 'bg-[#38BDF8] text-[#0F172A] font-bold'
-                          : 'bg-sky-500/20 text-[#38BDF8]'
+                      key={item.idx}
+                      onClick={() => {
+                        setActivePlateauIndex(item.idx);
+                        setPlateauProgress(0);
+                      }}
+                      className={`relative overflow-hidden cursor-pointer transition-all duration-300 p-4 sm:p-5 rounded-2xl border flex gap-4 ${
+                        isActive
+                          ? 'bg-slate-800/90 border-[#38BDF8] shadow-xl shadow-sky-500/15 scale-[1.015]'
+                          : 'bg-slate-800/40 border-slate-700/60 hover:bg-slate-800/60 hover:border-slate-600'
                       }`}
                     >
-                      {terminalMode === item.id ? <Check className="w-5 h-5" /> : <Scan className="w-5 h-5" />}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-sm text-white">{item.title}</h4>
-                        {terminalMode === item.id && (
-                          <span className="text-[10px] font-mono text-[#38BDF8] bg-sky-950/80 px-2 py-0.5 rounded border border-sky-800">
-                            ACTIF
-                          </span>
-                        )}
+                      {/* Barre de progression dynamique qui défile elle-même */}
+                      {isActive && (
+                        <div
+                          className="absolute bottom-0 left-0 h-1 bg-gradient-to-r from-[#0284C7] to-[#38BDF8] transition-all duration-100 ease-linear shadow-[0_0_10px_#38BDF8]"
+                          style={{ width: `${plateauProgress}%` }}
+                        />
+                      )}
+
+                      <div
+                        className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all ${
+                          isActive
+                            ? 'bg-[#38BDF8] text-[#0F172A] font-bold shadow-md shadow-sky-400/30'
+                            : 'bg-sky-500/15 text-[#38BDF8]'
+                        }`}
+                      >
+                        {isActive ? <Check className="w-5 h-5 stroke-[2.5]" /> : <Scan className="w-5 h-5" />}
                       </div>
-                      <p className="text-xs text-slate-400 mt-1 leading-relaxed">{item.desc}</p>
-                      <p className="text-[11px] font-mono text-emerald-400 mt-1.5 flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                        {item.sub}
-                      </p>
+
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className="font-bold text-sm sm:text-base text-white tracking-tight">{item.title}</h4>
+                          {isActive && (
+                            <span className="text-[10px] font-mono text-[#38BDF8] bg-sky-950 px-2 py-0.5 rounded-full border border-sky-800 font-bold shrink-0">
+                              EN DIRECT
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-400 mt-1 leading-relaxed">{item.desc}</p>
+                        <p className="text-[11px] font-mono text-emerald-400 mt-2 flex items-center gap-1.5 font-medium">
+                          <span className={`w-1.5 h-1.5 rounded-full bg-emerald-400 ${isActive ? 'animate-ping' : ''}`}></span>
+                          {item.sub}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
+              </div>
+
+              <div className="mt-4 text-[11px] font-mono text-slate-500 flex items-center justify-between">
+                <span>Cycles automatiques toutes les 6 secondes</span>
+                <span className="text-slate-400">Passez la souris pour mettre en pause</span>
               </div>
             </div>
 
-            {/* Colonne Droite : Terminal 3D Dynamique & Interactif */}
+            {/* Colonne Droite : Terminal 3D & Simulateur avec VRAIES PHOTOS DE DENTS */}
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-2xl bg-slate-900 p-5 sm:p-7">
                 
@@ -765,7 +835,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                     <span className="w-3 h-3 rounded-full bg-red-500/80 inline-block"></span>
                     <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
                     <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
-                    <span className="ml-2 font-bold text-slate-300">TERMINAL 3D LA GALERIE</span>
+                    <span className="ml-2 font-bold text-slate-200">TERMINAL 3D LA GALERIE</span>
                   </div>
                   <span className="text-emerald-400 flex items-center gap-1.5 font-bold">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
@@ -774,11 +844,13 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 </div>
 
                 {/* Écran Moniteur Principal */}
-                <div className="relative aspect-[4/3] rounded-2xl bg-[#090D16] border border-slate-800 overflow-hidden flex flex-col justify-between p-5">
+                <div className="relative aspect-[4/3] rounded-2xl bg-[#090D16] border border-slate-800 overflow-hidden flex flex-col justify-between p-4 sm:p-5">
 
-                  {/* Mode 1 : SCANNER 3D INTRA-ORAL AVEC FAISCEAU LASER DYNAMIQUE */}
-                  {terminalMode === 'scanner' && (
-                    <div className="relative h-full flex flex-col justify-between">
+                  {/* ========================================================
+                      MODE 0 : SCANNER 3D INTRA-ORAL AVEC FAISCEAU LASER
+                      ======================================================== */}
+                  {activePlateauIndex === 0 && (
+                    <div className="relative h-full flex flex-col justify-between animate-fade-in">
                       {/* Ligne laser qui balaie de haut en bas */}
                       <div className="scan-laser-beam absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#38BDF8] to-transparent shadow-[0_0_15px_#38BDF8] pointer-events-none z-20"></div>
 
@@ -789,7 +861,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                           <div>CAPTEUR : 4K HD OPTICAL</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-emerald-400">POINTS 3D : {telemetryPoints.toLocaleString()}</div>
+                          <div className="text-emerald-400 font-bold">POINTS 3D : {telemetryPoints.toLocaleString()}</div>
                           <div>PRÉCISION : 14.8 µm</div>
                         </div>
                       </div>
@@ -797,7 +869,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       {/* Maillage 3D central stylisé */}
                       <div className="my-auto text-center relative z-10 py-4">
                         <div className="relative inline-block">
-                          <div className="w-24 h-24 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center mx-auto mb-3 shadow-[0_0_30px_rgba(56,189,248,0.2)]">
+                          <div className="w-24 h-24 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center mx-auto mb-3 shadow-[0_0_35px_rgba(56,189,248,0.25)]">
                             <Activity className="w-12 h-12 text-[#38BDF8] animate-pulse" />
                           </div>
                           {/* Ondes concentriques */}
@@ -807,19 +879,19 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                           Reconstruction d'Arcade Dentaire en Direct
                         </div>
                         <p className="text-xs text-slate-400 max-w-xs mx-auto mt-1 font-mono">
-                          Échantillonnage en temps réel sans empreinte physique
+                          Échantillonnage 3D en temps réel sans empreinte physique
                         </p>
                       </div>
 
-                      {/* Barre de progression & CTA */}
+                      {/* Barre d'état & CTA */}
                       <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono z-10">
                         <span className="text-slate-400 flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-pulse"></span>
-                          FLUX ULTRA-HAUTE DÉFINITION
+                          FLUX OPTIQUE SANS PÂTE
                         </span>
                         <button
                           onClick={() => setIsModalOpen(true)}
-                          className="bg-[#38BDF8] hover:bg-sky-400 text-[#0F172A] font-bold text-[11px] px-3.5 py-1.5 rounded-lg transition"
+                          className="bg-[#38BDF8] hover:bg-sky-400 text-[#0F172A] font-bold text-[11px] px-3.5 py-1.5 rounded-lg transition shadow-md"
                         >
                           Tester en cabinet →
                         </button>
@@ -827,73 +899,105 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                     </div>
                   )}
 
-                  {/* Mode 2 : SIMULATEUR SLIDER AVANT / APRÈS LE TRAITEMENT */}
-                  {terminalMode === 'simulation' && (
-                    <div className="relative h-full flex flex-col justify-between">
-                      <div className="flex justify-between items-center text-[11px] font-mono text-slate-400 z-10 mb-2">
-                        <span className="text-[#38BDF8] font-bold">SIMULATION DU SOURIRE (SLIDER INTERACTIF)</span>
-                        <span className="text-amber-300">FAIRE GLISSER LE CURSEUR ↔</span>
+                  {/* ========================================================
+                      MODE 1 : VRAIE COMPARAISON AVANT / APRÈS (PHOTOS CLINIQUES RÉELLES)
+                      ======================================================== */}
+                  {activePlateauIndex === 1 && (
+                    <div className="relative h-full flex flex-col justify-between animate-fade-in">
+                      
+                      {/* En-tête simulateur */}
+                      <div className="flex justify-between items-center text-[11px] font-mono text-slate-300 z-10 mb-2">
+                        <span className="text-[#38BDF8] font-bold flex items-center gap-1.5">
+                          <span className="w-2 h-2 rounded-full bg-[#38BDF8] animate-ping"></span>
+                          CAS RÉEL : VRAIES PHOTOS AVANT / APRÈS
+                        </span>
+                        <span className="text-amber-300 text-[10px] hidden sm:inline">DÉFILE AUTO OU GLISSER ↔</span>
                       </div>
 
-                      {/* Cadre de comparaison Avant / Après */}
-                      <div className="relative flex-1 rounded-xl overflow-hidden bg-slate-900 border border-slate-700 select-none">
-                        {/* Côté Après (Smile Design parfait) */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-sky-950 via-slate-900 to-[#0F172A] flex flex-col items-center justify-center p-4 text-center">
-                          <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-800 mb-2">
-                            APRÈS : SMILE DESIGN CÉRAMIQUE
+                      {/* Cadre Split Photo Avant / Après */}
+                      <div
+                        className="relative flex-1 rounded-xl overflow-hidden border border-slate-700 select-none cursor-ew-resize group"
+                        onMouseDown={() => setIsUserDragging(true)}
+                        onMouseUp={() => setIsUserDragging(false)}
+                        onTouchStart={() => setIsUserDragging(true)}
+                        onTouchEnd={() => setIsUserDragging(false)}
+                      >
+                        {/* 1. PHOTO APRÈS (Fond fixe complet) */}
+                        <img
+                          src={dentalAfter}
+                          alt="Après : Sourire parfait avec facettes céramique et blanchiment"
+                          className="absolute inset-0 w-full h-full object-cover object-center"
+                        />
+                        
+                        {/* Badge Côté Après */}
+                        <div className="absolute top-3 right-3 z-10 pointer-events-none">
+                          <span className="text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
+                            APRÈS : SMILE DESIGN
                           </span>
-                          <div className="font-serif italic text-3xl sm:text-4xl text-[#38BDF8] font-normal">
-                            Éclat Parfait & Harmonie Naturelle
-                          </div>
-                          <p className="text-xs text-slate-300 mt-2 font-mono">Teinte BL1 Blanc Naturel • Zéro Défaut</p>
                         </div>
 
-                        {/* Côté Avant (Masqué dynamiquement selon slider) */}
+                        {/* 2. PHOTO AVANT (Superposée et masquée selon sliderPosition) */}
                         <div
-                          className="absolute inset-y-0 left-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-r-2 border-amber-400 flex flex-col items-center justify-center p-4 text-center overflow-hidden"
+                          className="absolute inset-y-0 left-0 overflow-hidden border-r-2 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]"
                           style={{ width: `${sliderPosition}%` }}
                         >
-                          <div className="min-w-[280px]">
-                            <span className="text-[10px] font-mono font-bold text-amber-400 bg-amber-950/80 px-2.5 py-1 rounded-full border border-amber-800 mb-2 inline-block">
+                          <img
+                            src={dentalBefore}
+                            alt="Avant : Dents naturelles avec taches et teinte terne"
+                            className="absolute inset-0 w-full h-full object-cover object-center max-w-none"
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              minWidth: '100%'
+                            }}
+                          />
+                          {/* Badge Côté Avant */}
+                          <div className="absolute top-3 left-3 z-10 pointer-events-none">
+                            <span className="text-[10px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
                               AVANT TRAITEMENT
                             </span>
-                            <div className="font-sans font-bold text-xl sm:text-2xl text-slate-300">
-                              Dents Tachées & Espacement
-                            </div>
-                            <p className="text-xs text-slate-400 mt-2 font-mono">Teinte terne • Émail ébréché</p>
                           </div>
                         </div>
 
-                        {/* Poignée du curseur */}
+                        {/* 3. Poignée de curseur personnalisée */}
                         <div
-                          className="absolute top-0 bottom-0 w-8 -ml-4 flex items-center justify-center cursor-ew-resize z-30"
+                          className="absolute top-0 bottom-0 w-8 -ml-4 flex items-center justify-center z-30 pointer-events-none"
                           style={{ left: `${sliderPosition}%` }}
                         >
-                          <div className="w-7 h-7 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-lg font-bold text-xs">
+                          <div className="w-8 h-8 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-2xl font-extrabold text-xs border-2 border-white">
                             ↔
                           </div>
                         </div>
                       </div>
 
-                      {/* Contrôle Slider */}
-                      <div className="pt-3 flex items-center gap-3 z-10">
-                        <span className="text-[10px] font-mono text-slate-400">AVANT</span>
+                      {/* Contrôle Slider Manuel & Auto */}
+                      <div className="pt-2 flex items-center gap-3 z-10">
+                        <span className="text-[10px] font-mono font-bold text-amber-400">AVANT</span>
                         <input
                           type="range"
                           min="5"
                           max="95"
                           value={sliderPosition}
-                          onChange={(e) => setSliderPosition(Number(e.target.value))}
+                          onMouseDown={() => setIsUserDragging(true)}
+                          onMouseUp={() => setIsUserDragging(false)}
+                          onTouchStart={() => setIsUserDragging(true)}
+                          onTouchEnd={() => setIsUserDragging(false)}
+                          onChange={(e) => {
+                            setIsUserDragging(true);
+                            setSliderPosition(Number(e.target.value));
+                          }}
                           className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-[#38BDF8]"
                         />
-                        <span className="text-[10px] font-mono text-[#38BDF8]">APRÈS</span>
+                        <span className="text-[10px] font-mono font-bold text-emerald-400">APRÈS</span>
                       </div>
                     </div>
                   )}
 
-                  {/* Mode 3 : ANESTHÉSIE OSTÉOCENTRALE SANS AIGUILLE */}
-                  {terminalMode === 'anesthesia' && (
-                    <div className="relative h-full flex flex-col justify-between">
+                  {/* ========================================================
+                      MODE 2 : ANESTHÉSIE OSTÉOCENTRALE SANS DOULEUR
+                      ======================================================== */}
+                  {activePlateauIndex === 2 && (
+                    <div className="relative h-full flex flex-col justify-between animate-fade-in">
                       <div className="flex justify-between items-start text-[11px] font-mono text-slate-400 z-10">
                         <span className="text-[#059669] font-bold">SYSTÈME QUICK-SLEEPER ASSISTÉ</span>
                         <span className="text-emerald-400">CONFORT : 100% SANS DOULEUR</span>
@@ -906,8 +1010,8 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                         <h4 className="font-display font-bold text-lg text-white">
                           Diffusion Électronique Micro-Gouttes
                         </h4>
-                        <p className="text-xs text-slate-400 max-w-sm mx-auto mt-2">
-                          La pression est régulée par micro-processeur en fonction de la résistance osseuse. Résultat : vous ne sentez strictement rien.
+                        <p className="text-xs text-slate-400 max-w-sm mx-auto mt-2 leading-relaxed">
+                          La pression est régulée par micro-processeur en fonction de la résistance osseuse. Résultat : vous ne sentez strictement rien et la lèvre reste souple.
                         </p>
                       </div>
 
@@ -1284,7 +1388,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
       </footer>
 
       {/* =========================================================================
-          10. BOUTON FLOTTANT WHATSAPP PERMANENT (CONVERSION MAXIMALE)
+          10. BOUTON FLOTTANT WHATSAPP PERMANENT
           ========================================================================= */}
       <a
         href="https://wa.me/221786509595?text=Bonjour%20Clinique%20Dentaire%20La%20Galerie,%20je%20souhaite%20prendre%20rendez-vous."
