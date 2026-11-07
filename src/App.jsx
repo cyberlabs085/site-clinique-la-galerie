@@ -48,6 +48,12 @@ export default function App() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isHeroCalendarOpen, setIsHeroCalendarOpen] = useState(false);
   const [isModalCalendarOpen, setIsModalCalendarOpen] = useState(false);
+  const [isHeroTimeOpen, setIsHeroTimeOpen] = useState(false);
+  const [isModalTimeOpen, setIsModalTimeOpen] = useState(false);
+
+  // Créneaux horaires de consultation
+  const morningSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00'];
+  const afternoonSlots = ['14:30', '15:00', '15:30', '16:00', '16:30', '17:00'];
 
   // Prochains 7 jours ouvrés pour le calendrier de réservation
   const upcomingDays = React.useMemo(() => {
@@ -806,17 +812,23 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2">
-                      3. Créneau Horaire
+                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                      <span>3. Créneau Horaire</span>
+                      <span className="text-[11px] text-[#0284C7] font-semibold lowercase">
+                        {selectedSlot ? `✓ ${selectedSlot}` : ''}
+                      </span>
                     </label>
                     <div className="grid grid-cols-4 gap-2">
-                      {['09:30', '11:00', '15:00', '16:30'].map((slot) => (
+                      {['09:30', '11:00', '15:00'].map((slot) => (
                         <button
                           type="button"
                           key={slot}
-                          onClick={() => setSelectedSlot(slot)}
-                          className={`py-1.5 text-xs font-mono font-bold rounded-lg border transition ${
-                            selectedSlot === slot
+                          onClick={() => {
+                            setSelectedSlot(slot);
+                            setIsHeroTimeOpen(false);
+                          }}
+                          className={`py-2 text-xs font-mono font-bold rounded-lg border transition cursor-pointer ${
+                            selectedSlot === slot && !isHeroTimeOpen
                               ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-sm'
                               : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                           }`}
@@ -824,7 +836,113 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                           {slot}
                         </button>
                       ))}
+                      <button
+                        type="button"
+                        onClick={() => setIsHeroTimeOpen(!isHeroTimeOpen)}
+                        className={`py-2 text-xs font-bold rounded-lg border transition cursor-pointer flex items-center justify-center gap-1 ${
+                          isHeroTimeOpen || !['09:30', '11:00', '15:00'].includes(selectedSlot)
+                            ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-sm'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <Clock className="w-3 h-3 text-[#38BDF8]" />
+                        <span>Autre 🕒</span>
+                      </button>
                     </div>
+
+                    {/* Panneau Dépliable de Tous les Horaires */}
+                    {isHeroTimeOpen && (
+                      <div className="mt-2.5 p-3.5 bg-slate-50 border-2 border-sky-300 rounded-2xl space-y-3 animate-fade-in shadow-inner">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-mono font-bold text-[#0284C7] flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                            <Clock className="w-3.5 h-3.5 text-[#0284C7]" />
+                            Choisir une heure de passage
+                          </span>
+                          <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">
+                            Sur rendez-vous
+                          </span>
+                        </div>
+
+                        {/* Matinée */}
+                        <div>
+                          <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                            <span>☀️ Matin (09h00 – 13h00)</span>
+                          </div>
+                          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+                            {morningSlots.map((slot) => (
+                              <button
+                                key={slot}
+                                type="button"
+                                onClick={() => setSelectedSlot(slot)}
+                                className={`py-1.5 rounded-lg border text-xs font-mono font-bold transition cursor-pointer text-center ${
+                                  selectedSlot === slot
+                                    ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-md scale-[1.03]'
+                                    : 'bg-white hover:bg-sky-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                                }`}
+                              >
+                                {slot}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Après-midi */}
+                        <div>
+                          <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                            <span>⛅ Après-midi (14h30 – 17h30)</span>
+                          </div>
+                          <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                            {afternoonSlots.map((slot) => (
+                              <button
+                                key={slot}
+                                type="button"
+                                onClick={() => setSelectedSlot(slot)}
+                                className={`py-1.5 rounded-lg border text-xs font-mono font-bold transition cursor-pointer text-center ${
+                                  selectedSlot === slot
+                                    ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-md scale-[1.03]'
+                                    : 'bg-white hover:bg-sky-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                                }`}
+                              >
+                                {slot}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Heure Précise Libre */}
+                        <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2 text-xs">
+                          <span className="text-[11px] font-mono text-slate-500">Heure personnalisée :</span>
+                          <input
+                            type="time"
+                            min="09:00"
+                            max="18:00"
+                            step="900"
+                            value={selectedSlot.includes(':') ? selectedSlot.slice(0, 5) : '11:00'}
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                setSelectedSlot(e.target.value);
+                              }
+                            }}
+                            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-[#0284C7]"
+                          />
+                        </div>
+
+                        {/* Confirmation badge */}
+                        <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
+                          <span className="flex items-center gap-1.5 truncate">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span>Créneau retenu : {selectedSlot}</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setIsHeroTimeOpen(false)}
+                            className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                          >
+                            Valider ✓
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-3 pt-2">
@@ -2178,17 +2296,23 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 </div>
 
                 <div>
-                  <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2">
-                    Créneau Horaire
+                  <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                    <span>Créneau Horaire</span>
+                    <span className="text-[11px] text-[#0284C7] font-semibold lowercase">
+                      {selectedSlot ? `✓ ${selectedSlot}` : ''}
+                    </span>
                   </label>
                   <div className="grid grid-cols-4 gap-2">
-                    {['09:30', '11:00', '15:00', '16:30'].map((slot) => (
+                    {['09:30', '11:00', '15:00'].map((slot) => (
                       <button
                         type="button"
                         key={slot}
-                        onClick={() => setSelectedSlot(slot)}
-                        className={`py-2 text-xs font-mono font-bold rounded-lg border transition ${
-                          selectedSlot === slot
+                        onClick={() => {
+                          setSelectedSlot(slot);
+                          setIsModalTimeOpen(false);
+                        }}
+                        className={`py-2 text-xs font-mono font-bold rounded-lg border transition cursor-pointer ${
+                          selectedSlot === slot && !isModalTimeOpen
                             ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-sm'
                             : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                         }`}
@@ -2196,7 +2320,113 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                         {slot}
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => setIsModalTimeOpen(!isModalTimeOpen)}
+                      className={`py-2 text-xs font-bold rounded-lg border transition cursor-pointer flex items-center justify-center gap-1 ${
+                        isModalTimeOpen || !['09:30', '11:00', '15:00'].includes(selectedSlot)
+                          ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-sm'
+                          : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                      }`}
+                    >
+                      <Clock className="w-3 h-3 text-[#38BDF8]" />
+                      <span>Autre 🕒</span>
+                    </button>
                   </div>
+
+                  {/* Panneau Dépliable Modal de Tous les Horaires */}
+                  {isModalTimeOpen && (
+                    <div className="mt-2.5 p-3.5 bg-slate-50 border-2 border-sky-300 rounded-2xl space-y-3 animate-fade-in shadow-inner">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-mono font-bold text-[#0284C7] flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                          <Clock className="w-3.5 h-3.5 text-[#0284C7]" />
+                          Choisir une heure de passage
+                        </span>
+                        <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">
+                          Cabinet Almadies
+                        </span>
+                      </div>
+
+                      {/* Matin */}
+                      <div>
+                        <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                          <span>☀️ Matin (09h00 – 13h00)</span>
+                        </div>
+                        <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+                          {morningSlots.map((slot) => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => setSelectedSlot(slot)}
+                              className={`py-1.5 rounded-lg border text-xs font-mono font-bold transition cursor-pointer text-center ${
+                                selectedSlot === slot
+                                  ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-md scale-[1.03]'
+                                  : 'bg-white hover:bg-sky-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Après-midi */}
+                      <div>
+                        <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider mb-1.5 flex items-center gap-1">
+                          <span>⛅ Après-midi (14h30 – 17h30)</span>
+                        </div>
+                        <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5">
+                          {afternoonSlots.map((slot) => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => setSelectedSlot(slot)}
+                              className={`py-1.5 rounded-lg border text-xs font-mono font-bold transition cursor-pointer text-center ${
+                                selectedSlot === slot
+                                  ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-md scale-[1.03]'
+                                  : 'bg-white hover:bg-sky-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Heure Précise Libre */}
+                      <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2 text-xs">
+                        <span className="text-[11px] font-mono text-slate-500">Heure personnalisée :</span>
+                        <input
+                          type="time"
+                          min="09:00"
+                          max="18:00"
+                          step="900"
+                          value={selectedSlot.includes(':') ? selectedSlot.slice(0, 5) : '11:00'}
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              setSelectedSlot(e.target.value);
+                            }
+                          }}
+                          className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-[#0284C7]"
+                        />
+                      </div>
+
+                      {/* Confirmation badge */}
+                      <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
+                        <span className="flex items-center gap-1.5 truncate">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>Créneau retenu : {selectedSlot}</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setIsModalTimeOpen(false)}
+                          className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                        >
+                          Valider ✓
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div>
