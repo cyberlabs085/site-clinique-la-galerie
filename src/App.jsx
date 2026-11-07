@@ -46,6 +46,31 @@ export default function App() {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isHeroCalendarOpen, setIsHeroCalendarOpen] = useState(false);
+  const [isModalCalendarOpen, setIsModalCalendarOpen] = useState(false);
+
+  // Prochains 7 jours ouvrés pour le calendrier de réservation
+  const upcomingDays = React.useMemo(() => {
+    const list = [];
+    const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+    const shortDays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
+    const months = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+
+    const now = new Date();
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(now);
+      d.setDate(now.getDate() + i);
+      const isSunday = d.getDay() === 0;
+      list.push({
+        shortDay: shortDays[d.getDay()],
+        dayNum: d.getDate(),
+        month: months[d.getMonth()],
+        isSunday,
+        label: `${dayNames[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`
+      });
+    }
+    return list;
+  }, []);
 
   // Plateau Technique Auto-Cycle State (0: Scanner, 1: Simulation, 2: Anesthésie)
   const [activePlateauIndex, setActivePlateauIndex] = useState(0);
@@ -659,25 +684,125 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                   </div>
 
                   <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2">
-                      2. Jour Préféré
+                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                      <span>2. Jour Préféré</span>
+                      <span className="text-[11px] text-[#0284C7] font-semibold lowercase">
+                        {selectedDate && selectedDate !== 'Aujourd’hui' && selectedDate !== 'Demain' && selectedDate !== 'Cette semaine'
+                          ? `✓ ${selectedDate}`
+                          : ''}
+                      </span>
                     </label>
                     <div className="grid grid-cols-3 gap-2">
-                      {['Aujourd’hui', 'Demain', 'Cette semaine'].map((d) => (
+                      {[
+                        { key: 'Aujourd’hui', label: 'Aujourd’hui' },
+                        { key: 'Demain', label: 'Demain' },
+                        { key: 'Cette semaine', label: 'Cette semaine 📅' }
+                      ].map((item) => (
                         <button
                           type="button"
-                          key={d}
-                          onClick={() => setSelectedDate(d)}
-                          className={`py-2 text-xs font-bold rounded-lg border transition ${
-                            selectedDate === d
+                          key={item.key}
+                          onClick={() => {
+                            if (item.key === 'Cette semaine') {
+                              setIsHeroCalendarOpen(!isHeroCalendarOpen);
+                              if (selectedDate === 'Aujourd’hui' || selectedDate === 'Demain') {
+                                setSelectedDate('Cette semaine');
+                              }
+                            } else {
+                              setSelectedDate(item.key);
+                              setIsHeroCalendarOpen(false);
+                            }
+                          }}
+                          className={`py-2 text-xs font-bold rounded-lg border transition cursor-pointer flex items-center justify-center gap-1 ${
+                            (selectedDate === item.key || (item.key === 'Cette semaine' && isHeroCalendarOpen))
                               ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-sm'
                               : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                           }`}
                         >
-                          {d}
+                          <span>{item.label}</span>
                         </button>
                       ))}
                     </div>
+
+                    {/* Calendrier Interactif Dépliable */}
+                    {isHeroCalendarOpen && (
+                      <div className="mt-2.5 p-3.5 bg-slate-50 border-2 border-sky-300 rounded-2xl space-y-2.5 animate-fade-in shadow-inner">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-mono font-bold text-[#0284C7] flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                            <Calendar className="w-3.5 h-3.5 text-[#0284C7]" />
+                            Choisir un jour de consultation
+                          </span>
+                          <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">
+                            Ouvert Lun – Sam
+                          </span>
+                        </div>
+
+                        {/* Grille des 7 prochains jours */}
+                        <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+                          {upcomingDays.map((d, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              disabled={d.isSunday}
+                              onClick={() => {
+                                setSelectedDate(d.label);
+                              }}
+                              className={`p-1.5 rounded-xl border text-center transition flex flex-col items-center justify-between cursor-pointer ${
+                                d.isSunday
+                                  ? 'opacity-40 bg-slate-100 border-slate-200 cursor-not-allowed'
+                                  : selectedDate === d.label
+                                  ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-md scale-[1.03]'
+                                  : 'bg-white hover:bg-sky-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                              }`}
+                            >
+                              <span className="text-[9px] font-mono font-bold uppercase">
+                                {d.shortDay}
+                              </span>
+                              <span className="text-sm font-extrabold my-0.5">
+                                {d.dayNum}
+                              </span>
+                              <span className="text-[9px] font-mono opacity-80">
+                                {d.isSunday ? 'Fermé' : d.month}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Sélecteur de date libre */}
+                        <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2 text-xs">
+                          <span className="text-[11px] font-mono text-slate-500">Autre date :</span>
+                          <input
+                            type="date"
+                            min={new Date().toISOString().split('T')[0]}
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                const parts = e.target.value.split('-');
+                                const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                                const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+                                const months = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+                                setSelectedDate(`${dayNames[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`);
+                              }
+                            }}
+                            className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-[#0284C7]"
+                          />
+                        </div>
+
+                        {selectedDate && selectedDate !== 'Cette semaine' && (
+                          <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
+                            <span className="flex items-center gap-1.5 truncate">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                              <span className="truncate">{selectedDate}</span>
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => setIsHeroCalendarOpen(false)}
+                              className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                            >
+                              Valider ✓
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -1690,22 +1815,44 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                   </div>
                 </div>
 
-                <div className="py-6 space-y-3 font-mono text-xs">
-                  <div className="flex justify-between py-1.5 border-b border-slate-100">
-                    <span className="text-slate-500">Lundi – Jeudi :</span>
-                    <span className="font-bold text-slate-800">09h00 – 13h00 / 14h30 – 17h30</span>
+                <div className="py-6 space-y-2.5 font-mono text-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                      <span className="text-slate-700 font-semibold">Lundi – Jeudi</span>
+                    </div>
+                    <div className="font-bold text-slate-900 tracking-tight text-[11px] sm:text-xs pl-4 sm:pl-0">
+                      09h00 – 13h00 <span className="text-slate-300 font-normal">|</span> 14h30 – 17h30
+                    </div>
                   </div>
-                  <div className="flex justify-between py-1.5 border-b border-slate-100">
-                    <span className="text-slate-500">Vendredi :</span>
-                    <span className="font-bold text-slate-800">09h00 – 13h00 / 15h30 – 17h30</span>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                      <span className="text-slate-700 font-semibold">Vendredi</span>
+                    </div>
+                    <div className="font-bold text-slate-900 tracking-tight text-[11px] sm:text-xs pl-4 sm:pl-0">
+                      09h00 – 13h00 <span className="text-slate-300 font-normal">|</span> 15h30 – 17h30
+                    </div>
                   </div>
-                  <div className="flex justify-between py-1.5 border-b border-slate-100">
-                    <span className="text-slate-500">Samedi :</span>
-                    <span className="font-bold text-slate-800">09h00 – 13h30 (Urgences & Soins)</span>
+
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between py-2 border-b border-slate-100 gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                      <span className="text-slate-700 font-semibold">Samedi</span>
+                    </div>
+                    <div className="font-bold text-slate-900 tracking-tight text-[11px] sm:text-xs pl-4 sm:pl-0 flex items-center gap-1.5 flex-wrap">
+                      <span>09h00 – 13h30</span>
+                      <span className="text-[10px] font-sans font-medium text-[#0284C7] bg-sky-50 px-1.5 py-0.5 rounded">Soins & Urgences</span>
+                    </div>
                   </div>
-                  <div className="flex justify-between py-1.5 text-slate-400">
-                    <span>Dimanche :</span>
-                    <span>Fermé</span>
+
+                  <div className="flex items-center justify-between py-2 text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-slate-300 shrink-0"></span>
+                      <span>Dimanche</span>
+                    </div>
+                    <span className="text-[10px] font-sans font-medium bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">Fermé</span>
                   </div>
                 </div>
 
@@ -1918,37 +2065,137 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-1.5">
-                      Date Souhaitée
-                    </label>
-                    <select
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800"
-                    >
-                      <option value="Aujourd’hui">Aujourd’hui</option>
-                      <option value="Demain">Demain</option>
-                      <option value="Dans 48h">Dans 48 heures</option>
-                      <option value="Cette semaine">Cette semaine</option>
-                    </select>
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2 flex items-center justify-between">
+                    <span>Date Souhaitée</span>
+                    <span className="text-[11px] text-[#0284C7] font-semibold lowercase">
+                      {selectedDate && selectedDate !== 'Aujourd’hui' && selectedDate !== 'Demain' && selectedDate !== 'Cette semaine'
+                        ? `✓ ${selectedDate}`
+                        : ''}
+                    </span>
+                  </label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { key: 'Aujourd’hui', label: 'Aujourd’hui' },
+                      { key: 'Demain', label: 'Demain' },
+                      { key: 'Cette semaine', label: 'Cette semaine 📅' }
+                    ].map((item) => (
+                      <button
+                        type="button"
+                        key={item.key}
+                        onClick={() => {
+                          if (item.key === 'Cette semaine') {
+                            setIsModalCalendarOpen(!isModalCalendarOpen);
+                            if (selectedDate === 'Aujourd’hui' || selectedDate === 'Demain') {
+                              setSelectedDate('Cette semaine');
+                            }
+                          } else {
+                            setSelectedDate(item.key);
+                            setIsModalCalendarOpen(false);
+                          }
+                        }}
+                        className={`py-2 text-xs font-bold rounded-lg border transition cursor-pointer flex items-center justify-center gap-1 ${
+                          (selectedDate === item.key || (item.key === 'Cette semaine' && isModalCalendarOpen))
+                            ? 'bg-[#0F172A] text-white border-[#0F172A] shadow-sm'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>{item.label}</span>
+                      </button>
+                    ))}
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-1.5">
-                      Créneau Horaire
-                    </label>
-                    <select
-                      value={selectedSlot}
-                      onChange={(e) => setSelectedSlot(e.target.value)}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800"
-                    >
-                      <option value="09:30 (Matin)">09:30 (Matin)</option>
-                      <option value="11:00 (Matin)">11:00 (Matin)</option>
-                      <option value="15:00 (Après-midi)">15:00 (Après-midi)</option>
-                      <option value="16:30 (Fin de journée)">16:30 (Fin de journée)</option>
-                    </select>
+                  {/* Calendrier Modal Dépliable */}
+                  {isModalCalendarOpen && (
+                    <div className="mt-2.5 p-3.5 bg-slate-50 border-2 border-sky-300 rounded-2xl space-y-2.5 animate-fade-in shadow-inner">
+                      <div className="flex items-center justify-between text-xs">
+                        <span className="font-mono font-bold text-[#0284C7] flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                          <Calendar className="w-3.5 h-3.5 text-[#0284C7]" />
+                          Choisir un jour de consultation
+                        </span>
+                        <span className="text-[10px] font-mono text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 font-bold">
+                          Lun – Sam
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5">
+                        {upcomingDays.map((d, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            disabled={d.isSunday}
+                            onClick={() => setSelectedDate(d.label)}
+                            className={`p-1.5 rounded-xl border text-center transition flex flex-col items-center justify-between cursor-pointer ${
+                              d.isSunday
+                                ? 'opacity-40 bg-slate-100 border-slate-200 cursor-not-allowed'
+                                : selectedDate === d.label
+                                ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-md scale-[1.03]'
+                                : 'bg-white hover:bg-sky-50 text-slate-800 border-slate-200 hover:border-sky-300'
+                            }`}
+                          >
+                            <span className="text-[9px] font-mono font-bold uppercase">{d.shortDay}</span>
+                            <span className="text-sm font-extrabold my-0.5">{d.dayNum}</span>
+                            <span className="text-[9px] font-mono opacity-80">{d.isSunday ? 'Fermé' : d.month}</span>
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2 text-xs">
+                        <span className="text-[11px] font-mono text-slate-500">Autre date :</span>
+                        <input
+                          type="date"
+                          min={new Date().toISOString().split('T')[0]}
+                          onChange={(e) => {
+                            if (e.target.value) {
+                              const parts = e.target.value.split('-');
+                              const d = new Date(parts[0], parts[1] - 1, parts[2]);
+                              const dayNames = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+                              const months = ['Janv', 'Févr', 'Mars', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'];
+                              setSelectedDate(`${dayNames[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`);
+                            }
+                          }}
+                          className="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs text-slate-800 font-mono focus:outline-none focus:ring-1 focus:ring-[#0284C7]"
+                        />
+                      </div>
+
+                      {selectedDate && selectedDate !== 'Cette semaine' && (
+                        <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
+                          <span className="flex items-center gap-1.5 truncate">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                            <span className="truncate">{selectedDate}</span>
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setIsModalCalendarOpen(false)}
+                            className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                          >
+                            Valider ✓
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono font-bold text-slate-700 uppercase mb-2">
+                    Créneau Horaire
+                  </label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {['09:30', '11:00', '15:00', '16:30'].map((slot) => (
+                      <button
+                        type="button"
+                        key={slot}
+                        onClick={() => setSelectedSlot(slot)}
+                        className={`py-2 text-xs font-mono font-bold rounded-lg border transition ${
+                          selectedSlot === slot
+                            ? 'bg-[#0284C7] text-white border-[#0284C7] shadow-sm'
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                        }`}
+                      >
+                        {slot}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
