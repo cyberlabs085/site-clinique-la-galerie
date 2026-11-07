@@ -53,7 +53,7 @@ html {
   transition: transform 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.22s ease;
 }
 .btn-magnetic:hover {
-  transform: translateY(-2px) scale(1.025);
+  transform: translateY(-2px) scale(1.03);
 }
 .btn-magnetic:active {
   transform: translateY(0px) scale(0.98);
@@ -90,7 +90,7 @@ html {
   }
 }
 .scan-laser-beam {
-  animation: scanLaser 2.8s ease-in-out infinite;
+  animation: scanLaser 2.6s ease-in-out infinite;
 }
 
 @keyframes waveExpand {
@@ -109,14 +109,47 @@ html {
 
 @keyframes floatSlow {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translateY(0px) rotate(0deg);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-8px) rotate(0.4deg);
   }
 }
 .float-element {
-  animation: floatSlow 4s ease-in-out infinite;
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+/* Lueur d'aura de curseur */
+.cursor-aura {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 450px;
+  height: 450px;
+  margin-top: -225px;
+  margin-left: -225px;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(16, 185, 129, 0.04) 40%, transparent 70%);
+  filter: blur(25px);
+  z-index: 9999;
+  transition: transform 0.1s ease-out;
+  will-change: transform;
+}
+
+/* Shimmer Light Reflection */
+@keyframes shimmerPass {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+.shimmer-active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+  transform: translateX(-100%);
+  animation: shimmerPass 3.5s infinite;
+  pointer-events: none;
 }
 
 /* Infinite Marquee for Testimonials */
@@ -131,7 +164,7 @@ html {
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marqueeScroll 40s linear infinite;
+  animation: marqueeScroll 36s linear infinite;
 }
 .marquee-track:hover {
   animation-play-state: paused;

@@ -56,10 +56,47 @@ export default function App() {
   const [activeTestimonialIdx, setActiveTestimonialIdx] = useState(0);
   const [isTestimonialAutoplay, setIsTestimonialAutoplay] = useState(true);
 
-  // Canvas radar animation ref
-  const canvasRef = useRef(null);
+  // Animated Counters for Hero
+  const [counterSatisfaction, setCounterSatisfaction] = useState(0);
+  const [counterPrecision, setCounterPrecision] = useState(0);
 
-  // 1. Auto-Cycle the 3 Plateau 3D Cards automatically with animated progress
+  // Canvas Refs
+  const canvasRef = useRef(null);
+  const toothCanvasRef = useRef(null);
+  const cursorAuraRef = useRef(null);
+
+  // 1. Mouse Follower Aura
+  useEffect(() => {
+    const handleMouseMoveGlobal = (e) => {
+      if (cursorAuraRef.current) {
+        cursorAuraRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+      }
+    };
+    window.addEventListener('mousemove', handleMouseMoveGlobal);
+    return () => window.removeEventListener('mousemove', handleMouseMoveGlobal);
+  }, []);
+
+  // 2. Animated Counters on mount
+  useEffect(() => {
+    let start = 0;
+    const duration = 1800;
+    const startTime = Date.now();
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // easeOutExpo
+      const ease = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCounterSatisfaction(Number((ease * 99.4).toFixed(1)));
+      setCounterPrecision(Math.round(ease * 15));
+
+      if (progress >= 1) clearInterval(interval);
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // 3. Auto-Cycle the 3 Plateau 3D Cards automatically with animated progress
   useEffect(() => {
     if (isPlateauPaused) return;
     const DURATION = 6000; // 6 seconds per card
@@ -80,20 +117,19 @@ export default function App() {
     return () => clearInterval(timer);
   }, [activePlateauIndex, isPlateauPaused]);
 
-  // 2. Auto-Glide Slider for Before / After when in simulation mode & not dragged
+  // 4. Auto-Glide Slider for Before / After when in simulation mode & not dragged
   useEffect(() => {
     if (isUserDragging || activePlateauIndex !== 1) return;
     let angle = 0;
     const glideTimer = setInterval(() => {
       angle += 0.035;
-      // Smooth sinusoidal oscillation between 20% and 80%
       const pos = 50 + Math.sin(angle) * 32;
       setSliderPosition(pos);
     }, 35);
     return () => clearInterval(glideTimer);
   }, [isUserDragging, activePlateauIndex]);
 
-  // 3. Live telemetry pulse
+  // 5. Live telemetry pulse
   useEffect(() => {
     const interval = setInterval(() => {
       setTelemetryPoints((prev) => prev + Math.floor((Math.random() - 0.48) * 140));
@@ -101,7 +137,7 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // 4. Autoplay Testimonial Carousel
+  // 6. Autoplay Testimonial Carousel
   useEffect(() => {
     if (!isTestimonialAutoplay) return;
     const timer = setInterval(() => {
@@ -110,7 +146,136 @@ export default function App() {
     return () => clearInterval(timer);
   }, [isTestimonialAutoplay]);
 
-  // 5. Canvas 3D Medical Radar Background
+  // 7. Interactive 3D Tooth Wireframe Canvas in Mode 0 (Scanner 3D)
+  useEffect(() => {
+    if (activePlateauIndex !== 0) return;
+    const canvas = toothCanvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animId;
+    let angleY = 0;
+    let angleX = 0.2;
+    let laserY = 0;
+    let laserDir = 1.2;
+
+    const width = (canvas.width = canvas.parentElement.offsetWidth || 400);
+    const height = (canvas.height = canvas.parentElement.offsetHeight || 260);
+
+    // 3D model vertices for dental molar/crown
+    const vertices = [
+      // Crown Cusps (top)
+      { x: -35, y: -45, z: -35 },
+      { x: 35, y: -45, z: -35 },
+      { x: 35, y: -45, z: 35 },
+      { x: -35, y: -45, z: 35 },
+      { x: 0, y: -55, z: 0 }, // central fossa
+      // Mid enamel bulge
+      { x: -50, y: -10, z: -50 },
+      { x: 50, y: -10, z: -50 },
+      { x: 50, y: -10, z: 50 },
+      { x: -50, y: -10, z: 50 },
+      // Cervical line (neck)
+      { x: -38, y: 25, z: -38 },
+      { x: 38, y: 25, z: -38 },
+      { x: 38, y: 25, z: 38 },
+      { x: -38, y: 25, z: 38 },
+      // Roots (bottom tips)
+      { x: -25, y: 65, z: -25 },
+      { x: 25, y: 65, z: -25 },
+      { x: 0, y: 70, z: 30 }
+    ];
+
+    const edges = [
+      // Top crown
+      [0, 1], [1, 2], [2, 3], [3, 0],
+      [0, 4], [1, 4], [2, 4], [3, 4],
+      // Upper sides
+      [0, 5], [1, 6], [2, 7], [3, 8],
+      // Mid waist
+      [5, 6], [6, 7], [7, 8], [8, 5],
+      // Lower sides
+      [5, 9], [6, 10], [7, 11], [8, 12],
+      // Neck
+      [9, 10], [10, 11], [11, 12], [12, 9],
+      // Roots
+      [9, 13], [10, 14], [11, 15], [12, 15]
+    ];
+
+    const render = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      angleY += 0.02;
+      laserY += laserDir;
+      if (laserY > height * 0.8 || laserY < height * 0.2) laserDir *= -1;
+
+      const cosY = Math.cos(angleY);
+      const sinY = Math.sin(angleY);
+      const cosX = Math.cos(angleX);
+      const sinX = Math.sin(angleX);
+
+      const projected = vertices.map((v) => {
+        // Rotate Y
+        let x1 = v.x * cosY - v.z * sinY;
+        let z1 = v.z * cosY + v.x * sinY;
+        // Rotate X
+        let y2 = v.y * cosX - z1 * sinX;
+        let z2 = z1 * cosX + v.y * sinX;
+
+        const distance = 240;
+        const fov = distance / (distance + z2);
+        const x2D = width / 2 + x1 * fov * 1.5;
+        const y2D = height / 2 + y2 * fov * 1.5;
+
+        return { x: x2D, y: y2D, z: z2 };
+      });
+
+      // Draw 3D Edges
+      edges.forEach(([i, j]) => {
+        const p1 = projected[i];
+        const p2 = projected[j];
+
+        // Check if edge is near laser scanning beam
+        const isScanned = Math.abs((p1.y + p2.y) / 2 - laserY) < 18;
+
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = isScanned ? '#10B981' : 'rgba(56, 189, 248, 0.45)';
+        ctx.lineWidth = isScanned ? 2 : 1;
+        ctx.stroke();
+      });
+
+      // Draw 3D Vertices / Point cloud
+      projected.forEach((p) => {
+        const isScanned = Math.abs(p.y - laserY) < 16;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, isScanned ? 3.5 : 2, 0, Math.PI * 2);
+        ctx.fillStyle = isScanned ? '#34D399' : '#38BDF8';
+        ctx.shadowColor = isScanned ? '#10B981' : '#38BDF8';
+        ctx.shadowBlur = isScanned ? 12 : 6;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      // Dynamic Laser Beam Line
+      ctx.beginPath();
+      ctx.moveTo(width * 0.15, laserY);
+      ctx.lineTo(width * 0.85, laserY);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.85)';
+      ctx.shadowColor = '#38BDF8';
+      ctx.shadowBlur = 14;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => cancelAnimationFrame(animId);
+  }, [activePlateauIndex]);
+
+  // 8. Canvas 3D Medical Radar Background
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -126,13 +291,13 @@ export default function App() {
     };
     window.addEventListener('resize', handleResize);
 
-    const particles = Array.from({ length: 45 }, (_, i) => ({
+    const particles = Array.from({ length: 48 }, (_, i) => ({
       x: Math.random() * width,
       y: Math.random() * height,
-      vx: (Math.random() - 0.5) * 0.45,
-      vy: (Math.random() - 0.5) * 0.45,
+      vx: (Math.random() - 0.5) * 0.5,
+      vy: (Math.random() - 0.5) * 0.5,
       radius: Math.random() * 2.2 + 1,
-      color: i % 2 === 0 ? 'rgba(2, 132, 199, 0.5)' : 'rgba(16, 185, 129, 0.4)'
+      color: i % 2 === 0 ? 'rgba(2, 132, 199, 0.55)' : 'rgba(16, 185, 129, 0.45)'
     }));
 
     let angle = 0;
@@ -148,20 +313,20 @@ export default function App() {
       // Concentric circles
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(2, 132, 199, 0.09)';
+      ctx.strokeStyle = 'rgba(2, 132, 199, 0.1)';
       ctx.lineWidth = 1;
       ctx.stroke();
 
       ctx.beginPath();
       ctx.arc(cx, cy, radius * 0.55, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(2, 132, 199, 0.07)';
+      ctx.strokeStyle = 'rgba(2, 132, 199, 0.08)';
       ctx.stroke();
 
       // Sweeping radar arm
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.lineTo(cx + Math.cos(angle) * radius, cy + Math.sin(angle) * radius);
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.16)';
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.2)';
       ctx.lineWidth = 1.5;
       ctx.stroke();
 
@@ -186,7 +351,7 @@ export default function App() {
             ctx.beginPath();
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(2, 132, 199, ${0.14 * (1 - dist / 95)})`;
+            ctx.strokeStyle = `rgba(2, 132, 199, ${0.16 * (1 - dist / 95)})`;
             ctx.lineWidth = 0.6;
             ctx.stroke();
           }
@@ -376,12 +541,15 @@ Merci de me confirmer la disponibilité de ce créneau.`;
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] relative selection:bg-sky-200">
+    <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] relative selection:bg-sky-200 overflow-x-hidden">
+
+      {/* Lueur d'Aura Suiveuse de Curseur (Desktop) */}
+      <div ref={cursorAuraRef} className="cursor-aura hidden lg:block" />
 
       {/* =========================================================================
           1. TOP BANNER LIVE & CONTACT DIRECT
           ========================================================================= */}
-      <div className="bg-[#0F172A] text-white text-xs py-2 px-4 border-b border-slate-800">
+      <div className="bg-[#0F172A] text-white text-xs py-2 px-4 border-b border-slate-800 relative z-30">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-2 font-mono">
           <div className="flex items-center gap-2">
             <span className="relative flex h-2.5 w-2.5">
@@ -462,7 +630,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
 
             {/* Colonne Gauche : Titre Statutaire & Autorité */}
             <div className="lg:col-span-7">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-xs font-mono font-semibold mb-6">
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-50 border border-sky-200 text-sky-800 text-xs font-mono font-semibold mb-6 shadow-sm">
                 <Sparkles className="w-3.5 h-3.5 text-[#0284C7] animate-spin" style={{ animationDuration: '6s' }} />
                 <span>CHIRURGIE DENTAIRE & HAUTE ESTHÉTIQUE • ALMADIES</span>
               </div>
@@ -478,10 +646,10 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 La Clinique Dentaire <strong>La Galerie</strong> allie l'exigence médicale internationale, les technologies 3D de pointe et un confort absolu au cœur des Almadies.
               </p>
 
-              {/* Télémétrie d'Autorité Interactive */}
+              {/* Télémétrie d'Autorité Interactive avec Compteurs Animés */}
               <div className="grid grid-cols-3 gap-4 p-4 rounded-2xl bg-white/90 backdrop-blur-sm border border-slate-200/90 shadow-sm max-w-lg mb-8 hover:shadow-md transition">
                 <div>
-                  <div className="font-display text-2xl font-bold text-[#0F172A]">99.4%</div>
+                  <div className="font-display text-2xl font-bold text-[#0F172A]">{counterSatisfaction}%</div>
                   <div className="text-[11px] font-mono text-slate-500 uppercase">Satisfaction</div>
                 </div>
                 <div className="border-x border-slate-100 px-3">
@@ -489,7 +657,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                   <div className="text-[11px] font-mono text-slate-500 uppercase">Douleur</div>
                 </div>
                 <div>
-                  <div className="font-display text-2xl font-bold text-[#0284C7]">15 µm</div>
+                  <div className="font-display text-2xl font-bold text-[#0284C7]">{counterPrecision} µm</div>
                   <div className="text-[11px] font-mono text-slate-500 uppercase">Précision 3D</div>
                 </div>
               </div>
@@ -517,9 +685,9 @@ Merci de me confirmer la disponibilité de ce créneau.`;
               </div>
             </div>
 
-            {/* Colonne Droite : Module Express Prise de RDV Directe 30s */}
+            {/* Colonne Droite : Module Express Prise de RDV Directe 30s (Effet Flottant 3D) */}
             <div className="lg:col-span-5">
-              <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl shadow-slate-900/5 relative">
+              <div className="float-element bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-2xl shadow-slate-900/10 relative">
                 <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
                   <div>
                     <span className="text-[11px] font-mono text-[#0284C7] font-bold uppercase tracking-wider flex items-center gap-1.5">
@@ -710,10 +878,9 @@ Merci de me confirmer la disponibilité de ce créneau.`;
 
       {/* =========================================================================
           5. PLATEAU TECHNIQUE & TERMINAL 3D DÉFILANT AUTOMATIQUEMENT
-             (AVEC VRAIES PHOTOS AVANT / APRÈS & CYCLE AUTOMATIQUE SANS BLOCAGE)
+             (AVEC CANVAS 3D INTERACTIF DENTAIRE, VRAIES PHOTOS AVANT / APRÈS & PROGRESSION)
           ========================================================================= */}
       <section id="technologie" className="py-20 bg-[#0F172A] text-white relative overflow-hidden">
-        {/* Lueur d'ambiance laser */}
         <div className="absolute top-1/4 -right-20 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-10 left-10 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -825,7 +992,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
               </div>
             </div>
 
-            {/* Colonne Droite : Terminal 3D & Simulateur avec VRAIES PHOTOS DE DENTS */}
+            {/* Colonne Droite : Terminal 3D avec VRAI CANVAS 3D DENTAIRE & VRAIES PHOTOS */}
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden border border-slate-700 shadow-2xl bg-slate-900 p-5 sm:p-7">
                 
@@ -847,18 +1014,15 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                 <div className="relative aspect-[4/3] rounded-2xl bg-[#090D16] border border-slate-800 overflow-hidden flex flex-col justify-between p-4 sm:p-5">
 
                   {/* ========================================================
-                      MODE 0 : SCANNER 3D INTRA-ORAL AVEC FAISCEAU LASER
+                      MODE 0 : VRAI CANVAS 3D DENTAIRE EN ROTATION + FAISCEAU LASER
                       ======================================================== */}
                   {activePlateauIndex === 0 && (
-                    <div className="relative h-full flex flex-col justify-between animate-fade-in">
-                      {/* Ligne laser qui balaie de haut en bas */}
-                      <div className="scan-laser-beam absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[#38BDF8] to-transparent shadow-[0_0_15px_#38BDF8] pointer-events-none z-20"></div>
-
+                    <div className="relative h-full flex flex-col justify-between">
                       {/* Télémétrie en haut */}
                       <div className="flex justify-between items-start text-[11px] font-mono text-slate-400 z-10">
                         <div>
-                          <div className="text-[#38BDF8] font-bold">MODE : CAPTURE VOLUMÉTRIQUE</div>
-                          <div>CAPTEUR : 4K HD OPTICAL</div>
+                          <div className="text-[#38BDF8] font-bold">SCANNER 3D : MODÉLISATION EN COURS</div>
+                          <div>ARCADE DENTAIRE : MOLAIRE 16 NUMÉRISÉE</div>
                         </div>
                         <div className="text-right">
                           <div className="text-emerald-400 font-bold">POINTS 3D : {telemetryPoints.toLocaleString()}</div>
@@ -866,21 +1030,12 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                         </div>
                       </div>
 
-                      {/* Maillage 3D central stylisé */}
-                      <div className="my-auto text-center relative z-10 py-4">
-                        <div className="relative inline-block">
-                          <div className="w-24 h-24 rounded-full bg-sky-500/10 border border-sky-500/30 flex items-center justify-center mx-auto mb-3 shadow-[0_0_35px_rgba(56,189,248,0.25)]">
-                            <Activity className="w-12 h-12 text-[#38BDF8] animate-pulse" />
-                          </div>
-                          {/* Ondes concentriques */}
-                          <div className="wave-ring absolute inset-0 rounded-full border border-sky-400/40 pointer-events-none"></div>
+                      {/* Canvas 3D de la Dent en Rotation */}
+                      <div className="relative flex-1 flex items-center justify-center my-1">
+                        <canvas ref={toothCanvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
+                        <div className="absolute bottom-1 right-2 text-[10px] font-mono text-slate-500 bg-slate-950/70 px-2 py-0.5 rounded border border-slate-800">
+                          ROTATION 3D 60FPS • MAILLAGE HD
                         </div>
-                        <div className="font-display font-bold text-lg text-white">
-                          Reconstruction d'Arcade Dentaire en Direct
-                        </div>
-                        <p className="text-xs text-slate-400 max-w-xs mx-auto mt-1 font-mono">
-                          Échantillonnage 3D en temps réel sans empreinte physique
-                        </p>
                       </div>
 
                       {/* Barre d'état & CTA */}
@@ -903,7 +1058,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       MODE 1 : VRAIE COMPARAISON AVANT / APRÈS (PHOTOS CLINIQUES RÉELLES)
                       ======================================================== */}
                   {activePlateauIndex === 1 && (
-                    <div className="relative h-full flex flex-col justify-between animate-fade-in">
+                    <div className="relative h-full flex flex-col justify-between">
                       
                       {/* En-tête simulateur */}
                       <div className="flex justify-between items-center text-[11px] font-mono text-slate-300 z-10 mb-2">
@@ -997,7 +1152,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       MODE 2 : ANESTHÉSIE OSTÉOCENTRALE SANS DOULEUR
                       ======================================================== */}
                   {activePlateauIndex === 2 && (
-                    <div className="relative h-full flex flex-col justify-between animate-fade-in">
+                    <div className="relative h-full flex flex-col justify-between">
                       <div className="flex justify-between items-start text-[11px] font-mono text-slate-400 z-10">
                         <span className="text-[#059669] font-bold">SYSTÈME QUICK-SLEEPER ASSISTÉ</span>
                         <span className="text-emerald-400">CONFORT : 100% SANS DOULEUR</span>
