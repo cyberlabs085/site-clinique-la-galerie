@@ -50,6 +50,19 @@ export default function App() {
   const [isModalCalendarOpen, setIsModalCalendarOpen] = useState(false);
   const [isHeroTimeOpen, setIsHeroTimeOpen] = useState(false);
   const [isModalTimeOpen, setIsModalTimeOpen] = useState(false);
+  const [activeSoinId, setActiveSoinId] = useState('soin-1');
+
+  // Auto-cycle dynamique des soins sur mobile
+  useEffect(() => {
+    const soinIds = ['soin-1', 'soin-2', 'soin-3', 'soin-4', 'soin-5', 'soin-6'];
+    const timer = setInterval(() => {
+      setActiveSoinId((prev) => {
+        const nextIdx = (soinIds.indexOf(prev) + 1) % soinIds.length;
+        return soinIds[nextIdx];
+      });
+    }, 4500);
+    return () => clearInterval(timer);
+  }, []);
 
   // Créneaux horaires de consultation
   const morningSlots = ['09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00'];
@@ -793,17 +806,17 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                         </div>
 
                         {selectedDate && selectedDate !== 'Cette semaine' && (
-                          <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
-                            <span className="flex items-center gap-1.5 truncate">
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                              <span className="truncate">{selectedDate}</span>
-                            </span>
+                          <div className="bg-sky-50 text-[#0369A1] p-2.5 sm:p-3 rounded-xl flex flex-col xs:flex-row xs:items-center justify-between gap-2 border border-sky-200">
+                            <div className="flex items-center gap-2 text-xs font-mono font-bold">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                              <span className="truncate">Jour : <span className="text-[#0F172A] text-xs font-extrabold bg-white px-2 py-0.5 rounded border border-sky-200">{selectedDate}</span></span>
+                            </div>
                             <button
                               type="button"
                               onClick={() => setIsHeroCalendarOpen(false)}
-                              className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                              className="w-full xs:w-auto text-xs bg-[#0284C7] hover:bg-[#0369A1] text-white px-3.5 py-1.5 rounded-lg font-bold transition shadow-sm cursor-pointer text-center shrink-0"
                             >
-                              Valider ✓
+                              Valider ce jour ✓
                             </button>
                           </div>
                         )}
@@ -928,17 +941,17 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                         </div>
 
                         {/* Confirmation badge */}
-                        <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
-                          <span className="flex items-center gap-1.5 truncate">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span>Créneau retenu : {selectedSlot}</span>
-                          </span>
+                        <div className="bg-sky-50 text-[#0369A1] p-2.5 sm:p-3 rounded-xl flex flex-col xs:flex-row xs:items-center justify-between gap-2 border border-sky-200">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span>Créneau : <span className="text-[#0F172A] text-sm font-extrabold bg-white px-2 py-0.5 rounded border border-sky-200">{selectedSlot}</span></span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => setIsHeroTimeOpen(false)}
-                            className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                            className="w-full xs:w-auto text-xs bg-[#0284C7] hover:bg-[#0369A1] text-white px-3.5 py-1.5 rounded-lg font-bold transition shadow-sm cursor-pointer text-center shrink-0"
                           >
-                            Valider ✓
+                            Valider ce créneau ✓
                           </button>
                         </div>
                       </div>
@@ -1002,54 +1015,76 @@ Merci de me confirmer la disponibilité de ce créneau.`;
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {soins.map((s) => (
-              <div
-                key={s.id}
-                id={s.id}
-                onMouseMove={(e) => handleMouseMove(e, s.id)}
-                onMouseLeave={() => handleMouseLeave(s.id)}
-                className="card-3d-tilt relative bg-[#F8FAFC] border border-slate-200/90 rounded-2xl p-7 hover:border-sky-300 hover:shadow-xl transition-all flex flex-col justify-between"
-              >
-                <div className="glare-effect"></div>
+            {soins.map((s) => {
+              const isSelected = activeSoinId === s.id;
+              return (
+                <div
+                  key={s.id}
+                  id={s.id}
+                  onClick={() => setActiveSoinId(s.id)}
+                  onMouseMove={(e) => handleMouseMove(e, s.id)}
+                  onMouseLeave={() => handleMouseLeave(s.id)}
+                  className={`card-3d-tilt relative rounded-2xl p-6 sm:p-7 transition-all duration-300 flex flex-col justify-between cursor-pointer overflow-hidden ${
+                    isSelected
+                      ? 'soin-card-mobile-active border-2 border-[#0284C7] shadow-xl shadow-sky-500/15 -translate-y-1'
+                      : 'bg-[#F8FAFC] border border-slate-200/90 hover:border-sky-300 hover:shadow-xl hover:-translate-y-0.5'
+                  }`}
+                >
+                  <div className="glare-effect"></div>
+                  {isSelected && <div className="mobile-card-shine"></div>}
 
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-md ${s.tagColor}`}>
-                      {s.category}
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-[#0284C7]" />
-                      {s.delay}
-                    </span>
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] font-mono font-bold px-2.5 py-1 rounded-md ${s.tagColor}`}>
+                          {s.category}
+                        </span>
+                        {isSelected && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-[#0284C7] bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#0284C7] animate-pulse"></span>
+                            Sélectionné
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-[#0284C7]" />
+                        {s.delay}
+                      </span>
+                    </div>
+
+                    <h3 className="font-display text-xl font-bold text-[#0F172A] mb-3 leading-snug">
+                      {s.title}
+                    </h3>
+
+                    <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                      {s.desc}
+                    </p>
                   </div>
 
-                  <h3 className="font-display text-xl font-bold text-[#0F172A] mb-3 leading-snug">
-                    {s.title}
-                  </h3>
-
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
-                    {s.desc}
-                  </p>
+                  <div className="pt-4 border-t border-slate-200/70 flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                      <Award className="w-3.5 h-3.5 text-[#059669]" />
+                      {s.badge}
+                    </span>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedCare(s.title);
+                        setIsModalOpen(true);
+                      }}
+                      className={`text-xs font-bold px-3 py-1.5 rounded-lg transition-all flex items-center gap-1 group cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#0284C7] text-white shadow-sm hover:bg-[#0369A1]'
+                          : 'text-[#0284C7] hover:bg-sky-50'
+                      }`}
+                    >
+                      <span>Réserver</span>
+                      <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
+                    </button>
+                  </div>
                 </div>
-
-                <div className="pt-4 border-t border-slate-200/70 flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                    <Award className="w-3.5 h-3.5 text-[#059669]" />
-                    {s.badge}
-                  </span>
-                  <button
-                    onClick={() => {
-                      setSelectedCare(s.title);
-                      setIsModalOpen(true);
-                    }}
-                    className="text-xs font-bold text-[#0284C7] hover:text-[#0369A1] flex items-center gap-1 group"
-                  >
-                    <span>Réserver</span>
-                    <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition" />
-                  </button>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
         </div>
@@ -1281,28 +1316,29 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                               Le praticien projette votre sourire sur grand écran. Zéro pâte, confort absolu et précision médicale au micron.
                             </p>
-                            <div className="mt-3.5 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
-                              <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                Précision 15 microns
-                              </span>
-                              <div className="flex items-center gap-2">
+                            <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex flex-col xs:flex-row xs:items-center justify-between gap-2 z-10">
+                              <div className="flex items-center justify-between xs:justify-start gap-2">
+                                <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  Précision 15 µm
+                                </span>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setIsCardFlipped(true);
                                   }}
-                                  className="bg-sky-950/80 hover:bg-sky-900 text-sky-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-sky-700/70 transition flex items-center gap-1 cursor-pointer"
+                                  className="bg-sky-950/80 hover:bg-sky-900 text-sky-300 font-mono text-[11px] px-2.5 py-1 rounded-lg border border-sky-700/70 transition flex items-center gap-1 cursor-pointer"
                                 >
+                                  <RotateCw className="w-3 h-3" />
                                   <span>Avantages ↷</span>
                                 </button>
-                                <button
-                                  onClick={() => setIsModalOpen(true)}
-                                  className="bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer"
-                                >
-                                  Prendre RDV →
-                                </button>
                               </div>
+                              <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="w-full xs:w-auto bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md cursor-pointer text-center"
+                              >
+                                Prendre RDV →
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1311,12 +1347,14 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       {/* MODE 1 : VRAIE COMPARAISON AVANT / APRÈS */}
                       {activePlateauIndex === 1 && (
                         <div className="relative h-full flex flex-col justify-between">
-                          <div className="flex justify-between items-center text-xs text-slate-300 z-10 mb-2">
-                            <span className="text-sky-300 font-bold font-mono text-[11px] flex items-center gap-1.5">
-                              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                              MÉTAMORPHOSE DU SOURIRE (AVANT / APRÈS)
+                          <div className="flex justify-between items-center text-xs text-slate-300 z-10 mb-2 gap-2">
+                            <span className="text-sky-300 font-bold font-mono text-[11px] flex items-center gap-1.5 truncate">
+                              <Sparkles className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+                              <span>SMILE DESIGN (AVANT / APRÈS)</span>
                             </span>
-                            <span className="text-amber-300 text-[10px] font-mono">DÉFILE AUTOMATIQUEMENT ↔</span>
+                            <span className="text-amber-300 text-[10px] font-mono shrink-0 bg-amber-950/60 px-2 py-0.5 rounded border border-amber-600/40">
+                              Glisser ↔
+                            </span>
                           </div>
 
                           <div
@@ -1326,17 +1364,24 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             onTouchStart={() => setIsUserDragging(true)}
                             onTouchEnd={() => setIsUserDragging(false)}
                           >
+                            {/* Badges Flottants Indépendants du Slider (ZÉRO COUPURE) */}
+                            <div className="absolute top-2.5 left-2.5 z-20 pointer-events-none">
+                              <span className="text-[10px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-500/80 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-md">
+                                AVANT
+                              </span>
+                            </div>
+                            <div className="absolute top-2.5 right-2.5 z-20 pointer-events-none">
+                              <span className="text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-500/80 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-md">
+                                APRÈS
+                              </span>
+                            </div>
+
                             <img
                               src={dentalAfter}
                               alt="Après : Sourire parfait avec facettes céramique et blanchiment"
                               className="absolute inset-0 w-full h-full object-cover object-center"
                               loading="eager"
                             />
-                            <div className="absolute top-3 right-3 z-10 pointer-events-none">
-                              <span className="text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
-                                APRÈS : FACETTES CÉRAMIQUE
-                              </span>
-                            </div>
 
                             <div
                               className="absolute inset-y-0 left-0 overflow-hidden border-r-2 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]"
@@ -1349,11 +1394,6 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                                 style={{ width: '100%', height: '100%', minWidth: '100%' }}
                                 loading="eager"
                               />
-                              <div className="absolute top-3 left-3 z-10 pointer-events-none">
-                                <span className="text-[10px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
-                                  AVANT TRAITEMENT
-                                </span>
-                              </div>
                             </div>
 
                             <div
@@ -1386,28 +1426,29 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             <span className="text-[10px] font-mono font-bold text-emerald-400">APRÈS</span>
                           </div>
 
-                          <div className="mt-2.5 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2 z-10">
-                            <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1">
-                              <Sparkles className="w-3.5 h-3.5" />
-                              Céramique e.max
-                            </span>
-                            <div className="flex items-center gap-2">
+                          <div className="mt-2.5 pt-2.5 border-t border-slate-700/80 flex flex-col xs:flex-row xs:items-center justify-between gap-2 z-10">
+                            <div className="flex items-center justify-between xs:justify-start gap-2">
+                              <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                Céramique e.max
+                              </span>
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setIsCardFlipped(true);
                                 }}
-                                className="bg-amber-950/80 hover:bg-amber-900 text-amber-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-amber-600/60 transition flex items-center gap-1 cursor-pointer"
+                                className="bg-amber-950/80 hover:bg-amber-900 text-amber-300 font-mono text-[11px] px-2.5 py-1 rounded-lg border border-amber-600/60 transition flex items-center gap-1 cursor-pointer"
                               >
+                                <RotateCw className="w-3 h-3" />
                                 <span>Protocole ↷</span>
                               </button>
-                              <button
-                                onClick={() => setIsModalOpen(true)}
-                                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer"
-                              >
-                                Simuler mon sourire →
-                              </button>
                             </div>
+                            <button
+                              onClick={() => setIsModalOpen(true)}
+                              className="w-full xs:w-auto bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md cursor-pointer text-center"
+                            >
+                              Simuler mon sourire →
+                            </button>
                           </div>
                         </div>
                       )}
@@ -1439,28 +1480,29 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                             <p className="text-xs text-slate-300 mt-1 leading-relaxed">
                               Grâce à l’anesthésie ostéocentrale assistée par micro-processeur, seule la dent soignée est insensibilisée. Repartez immédiatement avec le sourire libre, sans lèvre gelée.
                             </p>
-                            <div className="mt-3.5 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
-                              <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
-                                <CheckCircle2 className="w-3.5 h-3.5" />
-                                Zéro seringue visible
-                              </span>
-                              <div className="flex items-center gap-2">
+                            <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex flex-col xs:flex-row xs:items-center justify-between gap-2 z-10">
+                              <div className="flex items-center justify-between xs:justify-start gap-2">
+                                <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                                  <CheckCircle2 className="w-3.5 h-3.5" />
+                                  Zéro seringue visible
+                                </span>
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     setIsCardFlipped(true);
                                   }}
-                                  className="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-emerald-600/60 transition flex items-center gap-1 cursor-pointer"
+                                  className="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 font-mono text-[11px] px-2.5 py-1 rounded-lg border border-emerald-600/60 transition flex items-center gap-1 cursor-pointer"
                                 >
-                                  <span>La Science ↷</span>
-                                </button>
-                                <button
-                                  onClick={() => setIsModalOpen(true)}
-                                  className="bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold text-xs sm:text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer"
-                                >
-                                  Réserver sans peur →
+                                  <RotateCw className="w-3 h-3" />
+                                  <span>Science ↷</span>
                                 </button>
                               </div>
+                              <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="w-full xs:w-auto bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold text-xs px-3.5 py-2 rounded-xl transition shadow-md cursor-pointer text-center"
+                              >
+                                Réserver sans peur →
+                              </button>
                             </div>
                           </div>
                         </div>
@@ -1714,12 +1756,15 @@ Merci de me confirmer la disponibilité de ce créneau.`;
               </div>
 
               {/* Note d'aide Mobile sous la vitrine */}
-              <div className="lg:hidden mt-3 text-[11px] font-mono text-slate-400 flex items-center justify-between px-2">
-                <span className="flex items-center gap-1.5 text-slate-300">
-                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse"></span>
-                  Touchez les onglets en haut pour changer
+              <div className="lg:hidden mt-3 text-[11px] font-mono text-slate-400 flex items-center justify-between px-1">
+                <span className="flex items-center gap-1 text-slate-300 text-[10px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse shrink-0"></span>
+                  <span>Onglets tactiles en haut</span>
                 </span>
-                <span className="text-sky-300 font-bold">Flip 3D actif ↷</span>
+                <span className="text-sky-300 font-bold text-[10px] flex items-center gap-1">
+                  <RotateCw className="w-3 h-3 text-sky-400" />
+                  Flip 3D disponible
+                </span>
               </div>
             </div>
 
@@ -2277,17 +2322,17 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       </div>
 
                       {selectedDate && selectedDate !== 'Cette semaine' && (
-                        <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
-                          <span className="flex items-center gap-1.5 truncate">
-                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                            <span className="truncate">{selectedDate}</span>
-                          </span>
+                        <div className="bg-sky-50 text-[#0369A1] p-2.5 sm:p-3 rounded-xl flex flex-col xs:flex-row xs:items-center justify-between gap-2 border border-sky-200">
+                          <div className="flex items-center gap-2 text-xs font-mono font-bold">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            <span className="truncate">Jour : <span className="text-[#0F172A] text-xs font-extrabold bg-white px-2 py-0.5 rounded border border-sky-200">{selectedDate}</span></span>
+                          </div>
                           <button
                             type="button"
                             onClick={() => setIsModalCalendarOpen(false)}
-                            className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                            className="w-full xs:w-auto text-xs bg-[#0284C7] hover:bg-[#0369A1] text-white px-3.5 py-1.5 rounded-lg font-bold transition shadow-sm cursor-pointer text-center shrink-0"
                           >
-                            Valider ✓
+                            Valider ce jour ✓
                           </button>
                         </div>
                       )}
@@ -2412,17 +2457,17 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       </div>
 
                       {/* Confirmation badge */}
-                      <div className="bg-sky-50 text-[#0369A1] text-xs font-mono font-bold py-1.5 px-3 rounded-xl flex items-center justify-between border border-sky-200">
-                        <span className="flex items-center gap-1.5 truncate">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>Créneau retenu : {selectedSlot}</span>
-                        </span>
+                      <div className="bg-sky-50 text-[#0369A1] p-2.5 sm:p-3 rounded-xl flex flex-col xs:flex-row xs:items-center justify-between gap-2 border border-sky-200">
+                        <div className="flex items-center gap-2 text-xs font-mono font-bold">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Créneau : <span className="text-[#0F172A] text-sm font-extrabold bg-white px-2 py-0.5 rounded border border-sky-200">{selectedSlot}</span></span>
+                        </div>
                         <button
                           type="button"
                           onClick={() => setIsModalTimeOpen(false)}
-                          className="text-[10px] bg-[#0284C7] hover:bg-[#0369A1] text-white px-2.5 py-1 rounded-lg font-bold shrink-0 transition cursor-pointer"
+                          className="w-full xs:w-auto text-xs bg-[#0284C7] hover:bg-[#0369A1] text-white px-3.5 py-1.5 rounded-lg font-bold transition shadow-sm cursor-pointer text-center shrink-0"
                         >
-                          Valider ✓
+                          Valider ce créneau ✓
                         </button>
                       </div>
                     </div>

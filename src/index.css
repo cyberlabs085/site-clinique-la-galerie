@@ -196,3 +196,48 @@ html {
   -webkit-transform: rotateY(180deg);
 }
 
+/* ==========================================================================
+   ANIMATIONS DYNAMIQUES SOINS SUR MOBILE & DESKTOP
+   ========================================================================== */
+@keyframes mobilePulseBorder {
+  0%, 100% {
+    border-color: rgba(2, 132, 199, 0.4);
+    box-shadow: 0 4px 20px -2px rgba(2, 132, 199, 0.08);
+  }
+  50% {
+    border-color: rgba(2, 132, 199, 0.85);
+    box-shadow: 0 10px 30px -4px rgba(2, 132, 199, 0.22);
+  }
+}
+
+.soin-card-mobile-active {
+  animation: mobilePulseBorder 3s infinite ease-in-out;
+  background-color: #ffffff !important;
+}
+
+@keyframes mobileCardShine {
+  0% {
+    transform: translateX(-150%) skewX(-20deg);
+  }
+  30%, 100% {
+    transform: translateX(250%) skewX(-20deg);
+  }
+}
+
+.mobile-card-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: mobileCardShine 5s infinite ease-in-out;
+  border-radius: inherit;
+}
+
