@@ -25,7 +25,9 @@ import {
   Scan,
   Check,
   HeartHandshake,
-  UserCheck
+  UserCheck,
+  RotateCw,
+  RotateCcw
 } from 'lucide-react';
 
 import dentalBefore from './assets/dental_before.jpg';
@@ -47,6 +49,7 @@ export default function App() {
   const [activePlateauIndex, setActivePlateauIndex] = useState(0);
   const [plateauProgress, setPlateauProgress] = useState(0);
   const [isPlateauPaused, setIsPlateauPaused] = useState(false);
+  const [isCardFlipped, setIsCardFlipped] = useState(false); // Pivotement 3D Recto/Verso
 
   // Before/After Slider State with Auto-Gliding Animation
   const [sliderPosition, setSliderPosition] = useState(50);
@@ -93,9 +96,9 @@ export default function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // 3. Auto-Cycle the 3 Innovation Cards (6 seconds per card)
+  // 3. Auto-Cycle the 3 Innovation Cards (6 seconds per card, paused when user flips card to read)
   useEffect(() => {
-    if (isPlateauPaused) return;
+    if (isPlateauPaused || isCardFlipped) return;
     const DURATION = 6000;
     let startTime = Date.now();
 
@@ -108,11 +111,12 @@ export default function App() {
         startTime = Date.now();
         setActivePlateauIndex((prev) => (prev + 1) % 3);
         setPlateauProgress(0);
+        setIsCardFlipped(false);
       }
     }, 40);
 
     return () => clearInterval(timer);
-  }, [activePlateauIndex, isPlateauPaused]);
+  }, [activePlateauIndex, isPlateauPaused, isCardFlipped]);
 
   // 4. Auto-Glide Slider for Before / After
   useEffect(() => {
@@ -799,6 +803,7 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                       onClick={() => {
                         setActivePlateauIndex(item.idx);
                         setPlateauProgress(0);
+                        setIsCardFlipped(false);
                       }}
                       className={`relative overflow-hidden cursor-pointer transition-all duration-300 p-5 rounded-2xl border flex gap-4 ${
                         isActive
@@ -834,10 +839,24 @@ Merci de me confirmer la disponibilité de ce créneau.`;
                           )}
                         </div>
                         <p className="text-xs sm:text-sm text-slate-300 mt-1 leading-relaxed">{item.desc}</p>
-                        <p className="text-[11px] font-mono text-emerald-400 mt-2 flex items-center gap-1.5 font-medium">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                          {item.sub}
-                        </p>
+                        <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-700/60">
+                          <p className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5 font-medium">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                            {item.sub}
+                          </p>
+                          {isActive && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsCardFlipped(!isCardFlipped);
+                              }}
+                              className="text-[11px] font-mono text-sky-300 hover:text-white flex items-center gap-1 transition bg-sky-950/60 px-2 py-0.5 rounded border border-sky-800/80"
+                            >
+                              <RotateCw className="w-3 h-3" />
+                              <span>{isCardFlipped ? 'Photo direct' : 'Avantages ↷'}</span>
+                            </button>
+                          )}
+                        </div>
                       </div>
                     </div>
                   );
@@ -846,220 +865,503 @@ Merci de me confirmer la disponibilité de ce créneau.`;
 
               <div className="mt-4 text-[11px] font-mono text-slate-400 flex items-center justify-between">
                 <span>Défilement automatique continu</span>
-                <span>Passez la souris pour figer l'écran</span>
+                <span>Cliquez pour pivoter la carte 3D</span>
               </div>
             </div>
 
-            {/* Colonne Droite : Vitrine Médicale Prestige (VRAIES PHOTOS, ZÉRO CODE GEEK) */}
+            {/* Colonne Droite : Vitrine Médicale Prestige avec Flip 3D (Face Avant / Verso) */}
             <div className="lg:col-span-6">
               <div className="relative rounded-3xl overflow-hidden border border-slate-700/80 shadow-2xl bg-gradient-to-b from-slate-900 to-[#0F172A] p-5 sm:p-7">
                 
-                {/* En-tête Prestigieux Clinique */}
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800 mb-5 text-xs text-slate-300">
+                {/* En-tête Prestigieux Clinique avec bouton de Pivotement 3D */}
+                <div className="flex items-center justify-between pb-3.5 border-b border-slate-800 mb-4 text-xs text-slate-300">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></div>
-                    <span className="font-display font-bold tracking-wide text-white uppercase">
+                    <span className="font-display font-bold tracking-wide text-white uppercase text-xs sm:text-sm">
                       CLINIQUE DENTAIRE LA GALERIE
                     </span>
                   </div>
-                  <span className="font-mono text-xs text-sky-400 bg-sky-950/60 px-2.5 py-0.5 rounded-full border border-sky-800">
-                    Cabinet Numérique • Almadies
-                  </span>
+                  <button
+                    onClick={() => setIsCardFlipped(!isCardFlipped)}
+                    className="flex items-center gap-1.5 font-mono text-[11px] text-sky-300 bg-sky-950/80 hover:bg-sky-900 px-3 py-1.5 rounded-full border border-sky-600/70 transition shadow-sm cursor-pointer group"
+                    title="Pivoter la carte en 3D pour découvrir les coulisses et avantages"
+                  >
+                    <RotateCw className={`w-3.5 h-3.5 transition-transform duration-500 ${isCardFlipped ? 'rotate-180 text-amber-300' : 'text-sky-300'}`} />
+                    <span>{isCardFlipped ? '↶ Revenir au direct' : '↷ Retourner la carte 3D'}</span>
+                  </button>
                 </div>
 
-                {/* Cadre Visuel Principal */}
-                <div className="relative aspect-[4/3] rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden flex flex-col justify-between p-4 sm:p-5">
+                {/* Cadre Visuel Principal avec Flip 3D (Perspective & Preserve-3D) */}
+                <div className="relative aspect-[4/3] sm:aspect-[16/11] rounded-2xl perspective-1200">
+                  <div
+                    className={`relative w-full h-full rounded-2xl transition-transform duration-700 transform-style-3d ${
+                      isCardFlipped ? 'rotate-y-180' : ''
+                    }`}
+                  >
 
-                  {/* ========================================================
-                      MODE 0 : SCANNER 3D OPTIQUE (CONSULTATION HUMAINE RÉELLE)
-                      ======================================================== */}
-                  {activePlateauIndex === 0 && (
-                    <div className="relative h-full flex flex-col justify-between">
-                      {/* Vraie photo clinique en fond avec overlay doux */}
-                      <img
-                        src={clinicConsultation}
-                        alt="Consultation numérique et scanner 3D à la Clinique La Galerie"
-                        className="absolute inset-0 w-full h-full object-cover object-center"
-                        loading="eager"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+                    {/* ========================================================
+                        FACE AVANT (RECTO : EXPÉRIENCE EN DIRECT & VRAIES PHOTOS)
+                        ======================================================== */}
+                    <div className="absolute inset-0 w-full h-full rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden flex flex-col justify-between p-4 sm:p-5 backface-hidden shadow-2xl">
 
-                      {/* Badge Supérieur */}
-                      <div className="relative z-10 flex justify-between items-center text-xs">
-                        <span className="bg-[#0F172A]/85 backdrop-blur-md text-sky-300 font-mono text-[11px] px-3 py-1 rounded-full border border-sky-500/30">
-                          Numérisation Optique 3D
-                        </span>
-                        <span className="bg-emerald-950/80 text-emerald-300 font-mono text-[10px] px-2.5 py-1 rounded-full border border-emerald-700/80 font-bold">
-                          ZÉRO NAUSÉE
-                        </span>
-                      </div>
-
-                      {/* Cartouche d'explication au bas de la photo */}
-                      <div className="relative z-10 bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-slate-700/80 mt-auto">
-                        <h4 className="font-display font-bold text-sm sm:text-base text-white">
-                          Empreinte Numérique en 3 Minutes
-                        </h4>
-                        <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                          Le praticien projette votre sourire sur grand écran. Zéro pâte, confort absolu et précision médicale au micron.
-                        </p>
-                        <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex items-center justify-between">
-                          <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            Précision 15 microns
-                          </span>
-                          <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
-                          >
-                            Prendre RDV →
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* ========================================================
-                      MODE 1 : VRAIE COMPARAISON AVANT / APRÈS (CHARGEMENT ULTRA-RAPIDE)
-                      ======================================================== */}
-                  {activePlateauIndex === 1 && (
-                    <div className="relative h-full flex flex-col justify-between">
-                      
-                      {/* En-tête simulateur */}
-                      <div className="flex justify-between items-center text-xs text-slate-300 z-10 mb-2">
-                        <span className="text-sky-300 font-bold font-mono text-[11px] flex items-center gap-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                          MÉTAMORPHOSE DU SOURIRE (AVANT / APRÈS)
-                        </span>
-                        <span className="text-amber-300 text-[10px] font-mono">DÉFILE AUTOMATIQUEMENT ↔</span>
-                      </div>
-
-                      {/* Cadre Split Photo Avant / Après */}
-                      <div
-                        className="relative flex-1 rounded-xl overflow-hidden border border-slate-700 select-none cursor-ew-resize"
-                        onMouseDown={() => setIsUserDragging(true)}
-                        onMouseUp={() => setIsUserDragging(false)}
-                        onTouchStart={() => setIsUserDragging(true)}
-                        onTouchEnd={() => setIsUserDragging(false)}
-                      >
-                        {/* 1. PHOTO APRÈS (Fond fixe complet) */}
-                        <img
-                          src={dentalAfter}
-                          alt="Après : Sourire parfait avec facettes céramique et blanchiment"
-                          className="absolute inset-0 w-full h-full object-cover object-center"
-                          loading="eager"
-                        />
-                        
-                        {/* Badge Côté Après */}
-                        <div className="absolute top-3 right-3 z-10 pointer-events-none">
-                          <span className="text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
-                            APRÈS : FACETTES CÉRAMIQUE
-                          </span>
-                        </div>
-
-                        {/* 2. PHOTO AVANT (Superposée et masquée selon sliderPosition) */}
-                        <div
-                          className="absolute inset-y-0 left-0 overflow-hidden border-r-2 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]"
-                          style={{ width: `${sliderPosition}%` }}
-                        >
+                      {/* MODE 0 : SCANNER 3D OPTIQUE */}
+                      {activePlateauIndex === 0 && (
+                        <div className="relative h-full flex flex-col justify-between">
                           <img
-                            src={dentalBefore}
-                            alt="Avant : Dents naturelles avec taches et teinte terne"
-                            className="absolute inset-0 w-full h-full object-cover object-center max-w-none"
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              minWidth: '100%'
-                            }}
+                            src={clinicConsultation}
+                            alt="Consultation numérique et scanner 3D à la Clinique La Galerie"
+                            className="absolute inset-0 w-full h-full object-cover object-center"
                             loading="eager"
                           />
-                          {/* Badge Côté Avant */}
-                          <div className="absolute top-3 left-3 z-10 pointer-events-none">
-                            <span className="text-[10px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
-                              AVANT TRAITEMENT
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+
+                          {/* Badge Supérieur */}
+                          <div className="relative z-10 flex justify-between items-center text-xs">
+                            <span className="bg-[#0F172A]/85 backdrop-blur-md text-sky-300 font-mono text-[11px] px-3 py-1 rounded-full border border-sky-500/30">
+                              Numérisation Optique 3D
+                            </span>
+                            <span className="bg-emerald-950/80 text-emerald-300 font-mono text-[10px] px-2.5 py-1 rounded-full border border-emerald-700/80 font-bold">
+                              ZÉRO NAUSÉE
                             </span>
                           </div>
-                        </div>
 
-                        {/* 3. Poignée de curseur personnalisée */}
-                        <div
-                          className="absolute top-0 bottom-0 w-8 -ml-4 flex items-center justify-center z-30 pointer-events-none"
-                          style={{ left: `${sliderPosition}%` }}
-                        >
-                          <div className="w-8 h-8 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-2xl font-extrabold text-xs border-2 border-white">
-                            ↔
+                          {/* Cartouche d'explication au bas de la photo */}
+                          <div className="relative z-10 bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-slate-700/80 mt-auto">
+                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
+                              Empreinte Numérique en 3 Minutes
+                            </h4>
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                              Le praticien projette votre sourire sur grand écran. Zéro pâte, confort absolu et précision médicale au micron.
+                            </p>
+                            <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
+                              <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                Précision 15 microns
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsCardFlipped(true);
+                                  }}
+                                  className="bg-sky-950/80 hover:bg-sky-900 text-sky-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-sky-700/70 transition flex items-center gap-1"
+                                >
+                                  <span>Avantages ↷</span>
+                                </button>
+                                <button
+                                  onClick={() => setIsModalOpen(true)}
+                                  className="bg-white hover:bg-slate-100 text-[#0F172A] font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
+                                >
+                                  Prendre RDV →
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Contrôle Slider */}
-                      <div className="pt-2 flex items-center gap-3 z-10">
-                        <span className="text-[10px] font-mono font-bold text-amber-400">AVANT</span>
-                        <input
-                          type="range"
-                          min="5"
-                          max="95"
-                          value={sliderPosition}
-                          onMouseDown={() => setIsUserDragging(true)}
-                          onMouseUp={() => setIsUserDragging(false)}
-                          onTouchStart={() => setIsUserDragging(true)}
-                          onTouchEnd={() => setIsUserDragging(false)}
-                          onChange={(e) => {
-                            setIsUserDragging(true);
-                            setSliderPosition(Number(e.target.value));
-                          }}
-                          className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400"
-                        />
-                        <span className="text-[10px] font-mono font-bold text-emerald-400">APRÈS</span>
-                      </div>
-                    </div>
-                  )}
+                      {/* MODE 1 : VRAIE COMPARAISON AVANT / APRÈS */}
+                      {activePlateauIndex === 1 && (
+                        <div className="relative h-full flex flex-col justify-between">
+                          <div className="flex justify-between items-center text-xs text-slate-300 z-10 mb-2">
+                            <span className="text-sky-300 font-bold font-mono text-[11px] flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                              MÉTAMORPHOSE DU SOURIRE (AVANT / APRÈS)
+                            </span>
+                            <span className="text-amber-300 text-[10px] font-mono">DÉFILE AUTOMATIQUEMENT ↔</span>
+                          </div>
 
-                  {/* ========================================================
-                      MODE 2 : ANESTHÉSIE OSTÉOCENTRALE & SÉRÉNITÉ ABSOLUE
-                      ======================================================== */}
-                  {activePlateauIndex === 2 && (
-                    <div className="relative h-full flex flex-col justify-between">
-                      {/* Vraie photo de soin apaisé */}
-                      <img
-                        src={clinicCare}
-                        alt="Soin dentaire sans douleur à la Clinique La Galerie"
-                        className="absolute inset-0 w-full h-full object-cover object-center"
-                        loading="eager"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
-
-                      <div className="relative z-10 flex justify-between items-center text-xs">
-                        <span className="bg-[#0F172A]/85 backdrop-blur-md text-emerald-300 font-mono text-[11px] px-3 py-1 rounded-full border border-emerald-500/30">
-                          Sérénité & Confort Médical
-                        </span>
-                        <span className="bg-emerald-950/80 text-emerald-300 font-mono text-[10px] px-2.5 py-1 rounded-full border border-emerald-700/80 font-bold">
-                          100% SANS DOULEUR
-                        </span>
-                      </div>
-
-                      <div className="relative z-10 bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-slate-700/80 mt-auto">
-                        <h4 className="font-display font-bold text-sm sm:text-base text-white">
-                          Dites Adieu à la Peur du Dentiste
-                        </h4>
-                        <p className="text-xs text-slate-300 mt-1 leading-relaxed">
-                          Grâce à l’anesthésie ostéocentrale assistée par micro-processeur, seule la dent soignée est insensibilisée. Repartez immédiatement avec le sourire libre, sans lèvre gelée.
-                        </p>
-                        <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex items-center justify-between">
-                          <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            Zéro seringue visible
-                          </span>
-                          <button
-                            onClick={() => setIsModalOpen(true)}
-                            className="bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
+                          <div
+                            className="relative flex-1 rounded-xl overflow-hidden border border-slate-700 select-none cursor-ew-resize"
+                            onMouseDown={() => setIsUserDragging(true)}
+                            onMouseUp={() => setIsUserDragging(false)}
+                            onTouchStart={() => setIsUserDragging(true)}
+                            onTouchEnd={() => setIsUserDragging(false)}
                           >
-                            Réserver sans peur →
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                            <img
+                              src={dentalAfter}
+                              alt="Après : Sourire parfait avec facettes céramique et blanchiment"
+                              className="absolute inset-0 w-full h-full object-cover object-center"
+                              loading="eager"
+                            />
+                            <div className="absolute top-3 right-3 z-10 pointer-events-none">
+                              <span className="text-[10px] font-mono font-bold bg-emerald-950/90 text-emerald-300 border border-emerald-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
+                                APRÈS : FACETTES CÉRAMIQUE
+                              </span>
+                            </div>
 
+                            <div
+                              className="absolute inset-y-0 left-0 overflow-hidden border-r-2 border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)]"
+                              style={{ width: `${sliderPosition}%` }}
+                            >
+                              <img
+                                src={dentalBefore}
+                                alt="Avant : Dents naturelles avec taches et teinte terne"
+                                className="absolute inset-0 w-full h-full object-cover object-center max-w-none"
+                                style={{ width: '100%', height: '100%', minWidth: '100%' }}
+                                loading="eager"
+                              />
+                              <div className="absolute top-3 left-3 z-10 pointer-events-none">
+                                <span className="text-[10px] font-mono font-bold bg-amber-950/90 text-amber-300 border border-amber-600 px-2.5 py-1 rounded-md shadow-lg backdrop-blur-sm">
+                                  AVANT TRAITEMENT
+                                </span>
+                              </div>
+                            </div>
+
+                            <div
+                              className="absolute top-0 bottom-0 w-8 -ml-4 flex items-center justify-center z-30 pointer-events-none"
+                              style={{ left: `${sliderPosition}%` }}
+                            >
+                              <div className="w-8 h-8 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center shadow-2xl font-extrabold text-xs border-2 border-white">
+                                ↔
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="pt-2 flex items-center gap-3 z-10">
+                            <span className="text-[10px] font-mono font-bold text-amber-400">AVANT</span>
+                            <input
+                              type="range"
+                              min="5"
+                              max="95"
+                              value={sliderPosition}
+                              onMouseDown={() => setIsUserDragging(true)}
+                              onMouseUp={() => setIsUserDragging(false)}
+                              onTouchStart={() => setIsUserDragging(true)}
+                              onTouchEnd={() => setIsUserDragging(false)}
+                              onChange={(e) => {
+                                setIsUserDragging(true);
+                                setSliderPosition(Number(e.target.value));
+                              }}
+                              className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-sky-400"
+                            />
+                            <span className="text-[10px] font-mono font-bold text-emerald-400">APRÈS</span>
+                          </div>
+
+                          <div className="mt-2 pt-2 border-t border-slate-700/80 flex items-center justify-between gap-2 z-10">
+                            <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1">
+                              <Sparkles className="w-3.5 h-3.5" />
+                              Céramique e.max
+                            </span>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setIsCardFlipped(true);
+                                }}
+                                className="bg-amber-950/80 hover:bg-amber-900 text-amber-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-amber-600/60 transition flex items-center gap-1"
+                              >
+                                <span>Protocole ↷</span>
+                              </button>
+                              <button
+                                onClick={() => setIsModalOpen(true)}
+                                className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
+                              >
+                                Simuler mon sourire →
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* MODE 2 : ANESTHÉSIE OSTÉOCENTRALE & SÉRÉNITÉ */}
+                      {activePlateauIndex === 2 && (
+                        <div className="relative h-full flex flex-col justify-between">
+                          <img
+                            src={clinicCare}
+                            alt="Soin dentaire sans douleur à la Clinique La Galerie"
+                            className="absolute inset-0 w-full h-full object-cover object-center"
+                            loading="eager"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-transparent"></div>
+
+                          <div className="relative z-10 flex justify-between items-center text-xs">
+                            <span className="bg-[#0F172A]/85 backdrop-blur-md text-emerald-300 font-mono text-[11px] px-3 py-1 rounded-full border border-emerald-500/30">
+                              Sérénité & Confort Médical
+                            </span>
+                            <span className="bg-emerald-950/80 text-emerald-300 font-mono text-[10px] px-2.5 py-1 rounded-full border border-emerald-700/80 font-bold">
+                              100% SANS DOULEUR
+                            </span>
+                          </div>
+
+                          <div className="relative z-10 bg-slate-900/90 backdrop-blur-md p-4 rounded-xl border border-slate-700/80 mt-auto">
+                            <h4 className="font-display font-bold text-sm sm:text-base text-white">
+                              Dites Adieu à la Peur du Dentiste
+                            </h4>
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                              Grâce à l’anesthésie ostéocentrale assistée par micro-processeur, seule la dent soignée est insensibilisée. Repartez immédiatement avec le sourire libre, sans lèvre gelée.
+                            </p>
+                            <div className="mt-3 pt-2.5 border-t border-slate-700/80 flex items-center justify-between gap-2">
+                              <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5" />
+                                Zéro seringue visible
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setIsCardFlipped(true);
+                                  }}
+                                  className="bg-emerald-950/80 hover:bg-emerald-900 text-emerald-300 font-mono text-[11px] px-3 py-1.5 rounded-lg border border-emerald-600/60 transition flex items-center gap-1"
+                                >
+                                  <span>La Science ↷</span>
+                                </button>
+                                <button
+                                  onClick={() => setIsModalOpen(true)}
+                                  className="bg-emerald-500 hover:bg-emerald-400 text-[#0F172A] font-bold text-xs px-3.5 py-1.5 rounded-lg transition shadow-md"
+                                >
+                                  Réserver sans peur →
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+
+                    {/* ========================================================
+                        FACE ARRIÈRE (VERSO 3D : COULISSES, SCIENCE & AVANTAGES)
+                        ======================================================== */}
+                    <div className="absolute inset-0 w-full h-full rounded-2xl bg-gradient-to-br from-slate-900 via-[#0B1329] to-slate-950 border-2 border-sky-500/40 shadow-2xl p-4 sm:p-6 flex flex-col justify-between backface-hidden rotate-y-180 overflow-y-auto">
+
+                      {/* VERSO MODE 0 : AVANTAGES EMPREINTE OPTIQUE 3D */}
+                      {activePlateauIndex === 0 && (
+                        <div className="h-full flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-between pb-2.5 border-b border-sky-500/20 mb-3">
+                              <span className="text-[10px] font-mono font-bold text-sky-400 uppercase tracking-widest bg-sky-950/80 px-2.5 py-0.5 rounded-md border border-sky-700/60">
+                                VERSO • AVANTAGES PATIENTS
+                              </span>
+                              <button
+                                onClick={() => setIsCardFlipped(false)}
+                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-md transition border border-slate-700"
+                              >
+                                <RotateCcw className="w-3 h-3 text-sky-400" />
+                                <span>↶ Face photo</span>
+                              </button>
+                            </div>
+
+                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
+                              Pourquoi vous allez adorer l'empreinte 3D
+                            </h4>
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                              À La Galerie, nous avons banni la pâte à empreinte étouffante au profit d'un parcours fluide et apaisant.
+                            </p>
+
+                            <div className="grid grid-cols-1 gap-2.5 mt-3.5">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <CheckCircle2 className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Zéro haut-le-cœur ni étouffement</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Une tête optique miniature glisse avec douceur sans aucun goût désagréable ni réflexe nauséeux.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Zap className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Précision optique 15 microns</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Vos couronnes et facettes s'ajustent au millimètre dès le premier jour, sans retouche douloureuse.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Layers className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Dossier numérique archivé à vie</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Vos scans 3D restent sécurisés en cabinet pour tout besoin futur ou suivi à l'international.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-800 mt-2 flex items-center justify-between">
+                            <span className="text-[11px] font-mono text-sky-300 flex items-center gap-1.5">
+                              <Clock className="w-3.5 h-3.5 text-sky-400" />
+                              Numérisation : 3 min chrono
+                            </span>
+                            <button
+                              onClick={() => setIsModalOpen(true)}
+                              className="bg-[#0284C7] hover:bg-sky-500 text-white font-bold text-xs px-4 py-2 rounded-lg transition shadow-lg shadow-sky-600/30 flex items-center gap-1.5"
+                            >
+                              <span>Prendre RDV Numérique →</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* VERSO MODE 1 : PROTOCOLE SMILE DESIGN */}
+                      {activePlateauIndex === 1 && (
+                        <div className="h-full flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-between pb-2.5 border-b border-amber-500/20 mb-3">
+                              <span className="text-[10px] font-mono font-bold text-amber-400 uppercase tracking-widest bg-amber-950/80 px-2.5 py-0.5 rounded-md border border-amber-700/60">
+                                VERSO • LE PROTOCOLE EN 3 ÉTAPES
+                              </span>
+                              <button
+                                onClick={() => setIsCardFlipped(false)}
+                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-md transition border border-slate-700"
+                              >
+                                <RotateCcw className="w-3 h-3 text-amber-400" />
+                                <span>↶ Comparateur</span>
+                              </button>
+                            </div>
+
+                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
+                              La Création de Votre Sourire d'Exception
+                            </h4>
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                              Un sourire éclatant et naturel, sculpté selon la morphologie unique de votre visage.
+                            </p>
+
+                            <div className="grid grid-cols-1 gap-2.5 mt-3.5">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                  01
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Bilan Morphologique & Studio Photo</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Étude de l'axe des lèvres, de la carnation et du blanc de l’œil pour harmoniser la teinte.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-amber-500/20 text-amber-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                  02
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Validation 3D Avant de Commencer</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Vous validez la forme exacte et la translucidité sur écran 4K avant toute intervention en bouche.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 font-mono font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">
+                                  03
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Facettes Céramiques e.max (Garantie 15+ ans)</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Pose indolore de céramique biocompatible ultra-résistante aux taches de café, thé et épices.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-800 mt-2 flex items-center justify-between">
+                            <span className="text-[11px] font-mono text-amber-300 flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                              Délai : Réalisable en 48h à 72h
+                            </span>
+                            <button
+                              onClick={() => setIsModalOpen(true)}
+                              className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition shadow-lg shadow-amber-500/20 flex items-center gap-1.5"
+                            >
+                              <span>Planifier mon Smile Design →</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* VERSO MODE 2 : SCIENCE DU SOIN INDOLORE */}
+                      {activePlateauIndex === 2 && (
+                        <div className="h-full flex flex-col justify-between">
+                          <div>
+                            <div className="flex items-center justify-between pb-2.5 border-b border-emerald-500/20 mb-3">
+                              <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-widest bg-emerald-950/80 px-2.5 py-0.5 rounded-md border border-emerald-700/60">
+                                VERSO • SCIENCE SANS DOULEUR
+                              </span>
+                              <button
+                                onClick={() => setIsCardFlipped(false)}
+                                className="text-xs text-slate-300 hover:text-white flex items-center gap-1 bg-slate-800/80 hover:bg-slate-700 px-2.5 py-1 rounded-md transition border border-slate-700"
+                              >
+                                <RotateCcw className="w-3 h-3 text-emerald-400" />
+                                <span>↶ Face soin</span>
+                              </button>
+                            </div>
+
+                            <h4 className="font-display font-bold text-base sm:text-lg text-white">
+                              Comment nous avons éliminé la douleur
+                            </h4>
+                            <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                              Le système QuickSleeper diffuse le produit au rythme exact de la résistance tissulaire par micro-gouttes.
+                            </p>
+
+                            <div className="grid grid-cols-1 gap-2.5 mt-3.5">
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Shield className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Aucune seringue métallique terrifiante</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    L'appareil a l'allure élégante et rassurante d'un simple stylo médical électronique.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <CheckCircle2 className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Seule la dent ciblée s'endort</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Pas de lèvre engourdie, pas de joue déformée ni de langue anesthésiée pendant des heures.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="bg-slate-900/80 p-2.5 sm:p-3 rounded-xl border border-slate-800 flex items-start gap-3">
+                                <div className="w-7 h-7 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
+                                  <Smile className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <h5 className="text-xs font-bold text-white">Reprise normale de votre journée</h5>
+                                  <p className="text-[11px] text-slate-300 leading-snug mt-0.5">
+                                    Vous pouvez sortir du cabinet, parler distinctement en réunion ou déjeuner sans aucune gêne.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="pt-3 border-t border-slate-800 mt-2 flex items-center justify-between">
+                            <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                              Zéro effet bouche engourdie
+                            </span>
+                            <button
+                              onClick={() => setIsModalOpen(true)}
+                              className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs px-4 py-2 rounded-lg transition shadow-lg shadow-emerald-500/20 flex items-center gap-1.5"
+                            >
+                              <span>Prendre RDV sans stress →</span>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                    </div>
+
+                  </div>
                 </div>
               </div>
             </div>
